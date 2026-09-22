@@ -24,7 +24,7 @@ try {
   browser('wait', '#story-player[open]');
   click('#story-next'); browser('reload'); browser('wait', '#story-player[open]');
   assert.equal(browser('get','text','#story-title'), 'An unusual apprenticeship');
-  click('#story-skip'); click('#story-next');
+  click('#story-skip'); click('#story-skip');
   for (let i = 0; i < trials.length; i++) {
     const [title, sql, cells] = trials[i];
     browser('wait', '#spell-lesson[open]');
@@ -48,7 +48,7 @@ try {
     }
     click('#next'); browser('wait','#story-player[open]');
     click('#story-next');
-    if (i < trials.length - 1) { browser('wait','#story-player[open]'); click('#story-next'); }
+    if (i < trials.length - 1) { browser('wait','#story-player[open]'); click('#story-skip'); }
     console.log(`PASS ${title}: result, saved mastery, and story transition`);
   }
   browser('wait','#spellbook[open]');

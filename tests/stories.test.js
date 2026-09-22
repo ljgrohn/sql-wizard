@@ -25,7 +25,7 @@ test('reload preserves the prologue page and the destination of an unfinished tr
   const story = { seen: { prologue: true, 'first-spark': true }, pending: { id: 'after:first-spark', mode: 'transition', page: 0, target: 'light-the-ward' } };
   assert.deepEqual(restoreStory(JSON.parse(JSON.stringify(story))), story);
   assert.equal(restoreStory({pending:{id:'prologue',mode:'entry',page:1}}).pending.page, 1);
-  assert.equal(restoreStory({pending:{id:'prologue',mode:'entry',page:999}}).pending.page, 1);
+  assert.equal(restoreStory({pending:{id:'prologue',mode:'entry',page:999}}).pending.page, stories.prologue.pages.length - 1);
   assert.equal(restoreStory({pending:{id:'unknown',mode:'entry'}}).pending, null);
 });
 
@@ -37,4 +37,25 @@ test('story migration and replay do not grant or reset learning progress', () =>
   assert.equal(migrated.progress['potent-ingredients'], undefined);
   assert.deepEqual(migrated.drafts, original.drafts);
   assert.deepEqual(restoreStory(null), {seen:{},pending:null});
+});
+
+
+test('expanded scenes and the practice introduction can resume at every page', () => {
+  for (const id of ['prologue', ...lessons.map(lesson => lesson.id), 'practice']) {
+    const episode = storyEpisode(id);
+    assert.ok(episode.pages.length >= 2);
+    for (let page = 0; page < episode.pages.length; page++) {
+      const saved = { seen: {}, pending: { id, mode: 'replay', target: null, page } };
+      assert.deepEqual(restoreStory(saved), saved);
+    }
+    assert.equal(restoreStory({ pending: { id, mode: 'replay', page: 999 } }).pending.page, episode.pages.length - 1);
+  }
+});
+
+test('invalid saved episode IDs cannot interrupt story restoration', () => {
+  for (const id of [null, 12, {}, [], 'constructor', '__proto__', 'after:constructor']) {
+    assert.equal(storyEpisode(id), undefined);
+    assert.equal(restoreStory({ pending: { id, mode: 'entry' } }).pending, null);
+  }
+  assert.deepEqual(restoreStory({ seen: { practice: true, constructor: true } }).seen, { practice: true });
 });
