@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first trial opens with a spellbook explanation and example, then guided and independent practice. “Review this spell” reopens its teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 
@@ -41,7 +41,7 @@ This produces a preview deployment. Promote the reviewed preview or use `npx ver
 - Progress and drafts stay in this browser, not across devices.
 - Five playable trials, not the full curriculum. Grouping, CTE lessons, animal breeding, and alchemy are mapped in the plan but not yet authored as playable chapters.
 - The guided join challenges preview later curriculum topics and reuse the archive illustration.
-- Assisted completion is labeled; independent mastery variants are planned.
+- The first trial distinguishes guided completion from independent mastery and preserves solution assistance across reloads. The remaining trials retain the original prototype flow.
 - Hidden fixture checks are educational validation, not secure grading.
 - One SQLite dialect; PostgreSQL/MySQL differences are not taught in this version.
 

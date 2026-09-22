@@ -27,3 +27,13 @@ Used agent-browser against both Vite development (`127.0.0.1:5173`) and the stat
 ## Remaining product validation
 
 Real beginner playtesting, full keyboard/screen-reader auditing, additional mobile browsers, independent mastery variants, and the rest of the curriculum remain future work. The first five trials reuse one scene and include guided previews of later join concepts.
+
+## Revised first lesson — 2026-09-21
+
+The first trial now offers instruction before typing, a potency example, guided name selection with an insertion point, independent ID selection, and a fresh ID/name challenge after viewing the independent solution. The other four trials retain their prototype flow.
+
+- `npm test`: 18 tests pass, including exercise-specific changed-catalog evaluation, actual example output, progress migration, and assisted-versus-independent completion.
+- `npm run build`: static production build passes.
+- Browser checks against Vite: automatic teaching page, review, explicit skip, starter caret position, empty-slot feedback, Ctrl+Enter, guided success, independent solution assistance surviving reload, wrong column-order rejection, fresh mastery, mastery persistence, and continuation to trial two.
+- Checked the unassisted skip path, desktop teaching page, and 390px mobile layout. No horizontal page overflow or browser errors were observed. Verified mobile casting with a pointer click after explicitly scrolling the Cast button into view.
+- Full editor highlighting/indentation and distinct room artwork remain planned; the first trial adds result-derived catalog labels to the existing archive artwork.

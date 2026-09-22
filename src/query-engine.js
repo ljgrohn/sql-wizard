@@ -54,8 +54,10 @@ export function sameResult(actual, expected) {
   return JSON.stringify(rows(actual)) === JSON.stringify(rows(expected));
 }
 
-export function evaluate(SQL, lessonId, sql) {
-  const lesson = lessons.find(item => item.id === lessonId);
+export function evaluate(SQL, lessonId, sql, exercise) {
+  const baseLesson = lessons.find(item => item.id === lessonId);
+  if (exercise && !baseLesson?.exercises?.[exercise]) throw new Error('This exercise could not be found.');
+  const lesson = baseLesson && { ...baseLesson, ...baseLesson.exercises?.[exercise] };
   if (!lesson) throw new Error('This lesson could not be found.');
   let actual;
   let correct = true;

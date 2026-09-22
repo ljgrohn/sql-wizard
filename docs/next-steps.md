@@ -1,6 +1,6 @@
 # SQL Wizard — next steps after the first playtest
 
-Status: implementation plan, not completed changes. This supersedes the immediate next steps in the initial build plan. Preserve the EGA artwork, drawn window borders, and static Vercel architecture.
+Status: partially implemented. The first lesson now has an automatic SELECT/FROM spellbook page, an annotated example, guided name selection, independent ID selection, persistent assistance tracking, and a fresh two-column mastery challenge after assisted completion. Its starter uses an insertion point instead of underscores. Other trials, the shared SQL-aware editor, and new scene locations remain planned. This supersedes the immediate next steps in the initial build plan. Preserve the EGA artwork, drawn window borders, and static Vercel architecture.
 
 ## Priority 1: teach before asking
 
