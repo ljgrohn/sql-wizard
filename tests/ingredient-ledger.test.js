@@ -37,7 +37,8 @@ test('inserting the ledger preserves recipe position, story transition, drafts a
   const saved={version:4,index:4,progress:{'moonlight-tonic':'guided','steady-flame':'complete'},learning:{'steady-flame':{stage:'done',learned:true}},drafts:{'moonlight-tonic':'my recipe draft'},story:{seen:{prologue:true},pending:{id:'after:steady-flame',mode:'transition',page:0,target:'moonlight-tonic'}}};
   const migrated=migrateLearning(saved);
   assert.equal(lessons[migrated.index].id,'moonlight-tonic');
-  assert.equal(migrated.progress['moonlight-tonic'],'guided');
+  assert.equal(migrated.progress['moonlight-tonic'],undefined);
+  assert.equal(migrated.learning['moonlight-tonic'].migrated,true);
   assert.equal(migrated.learning['ingredient-ledger'].stage,'learn');
   assert.equal(migrated.progress['ingredient-ledger'],undefined);
   assert.deepEqual(migrated.story,saved.story);

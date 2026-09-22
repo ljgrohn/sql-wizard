@@ -84,3 +84,9 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Browser verified AND → Iona invitation → ingredient-ledger story → teaching → guided JOIN. Correct results include Moonstone’s zero and omit Emberroot’s missing stock record. Worked solution assistance survives reload, is labeled guided, and a fresh query earns mastery.
 - Verified ledger completion → recipe entry → recipe success → storeroom entry → LEFT JOIN success → ending → spellbook. Completed older trials retain their continuation after reload. Story replay, skipping, and Escape preserve lesson progress and drafts.
 - Inspected opening artwork and mobile workshop story at 390px with no page overflow. Story controls remain available while scrolling. No browser errors observed. Browser automation on narrow pages needed explicit scrolling before off-screen controls; pointer and keyboard flows were checked after bringing controls into view.
+
+## Revised recipe teaching — 2026-09-21
+
+- The three-table recipe now teaches bridge entries, both matching IDs, aliases, text literals, and recipe quantities versus available stock before practice. Two guided insertion slots build Moonlight tonic; independent practice reads Ember draught; mastery after assistance reads all recipe entries.
+- 42 tests and production build pass, including duplicate-entry preservation, changed recipe IDs, wrong relationship rejection, tutorial output, and progress migration.
+- Browser checked the teaching page, prevention of casting with the second slot empty, Next guided slot, guided recipe result, independent Ember draught result, and mastery surviving reload. No browser errors.

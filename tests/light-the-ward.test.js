@@ -42,7 +42,8 @@ test('v2 migration preserves first lesson mastery, other trials, drafts and edit
   const migrated = migrateLearning(original);
   assert.equal(migrated.learning['first-spark'].stage, 'done');
   assert.equal(migrated.progress['first-spark'], 'complete');
-  assert.equal(migrated.progress['moonlight-tonic'], 'complete');
+  assert.equal(migrated.progress['moonlight-tonic'], undefined);
+  assert.equal(migrated.learning['moonlight-tonic'].migrated, true);
   assert.equal(migrated.progress['light-the-ward'], undefined);
   assert.equal(migrated.learning['light-the-ward'].migrated, true);
   assert.deepEqual(migrated.drafts, original.drafts);
