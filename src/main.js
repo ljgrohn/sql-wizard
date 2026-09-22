@@ -1,5 +1,6 @@
 import '@fontsource/vt323/latin-400.css';
 import './style.css';
+import { openPractice } from './practice-player.js';
 import { createSqlEditor, initialSlots } from './sql-editor.js';
 import { lessons, fixture, tableInfo } from './lessons.js';
 import { matchesFilter, describeFilter, filterExplanation } from './row-filters.js';
@@ -69,7 +70,7 @@ function render() {
     <div class="game-shell">
       <header class="masthead">
         <a class="brand" href="#" aria-label="SQL Wizard home"><span class="brand-star" aria-hidden="true">✦</span> SQL WIZARD<span class="edition">THE FIRST SPARK</span></a>
-        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
+        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="workshop" class="quiet-button">Practice & craft</button><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
       </header>
       <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : `0${i + 1}`}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
       <main>
@@ -89,7 +90,7 @@ function render() {
             </section>
           </aside>
         </div>
-        ${hasTeaching() ? `<section class="learning-strip frame" aria-label="Learning steps"><span>${learningState().stage === 'done' ? `✓ ${lesson().topic} mastered` : learningState().stage === 'guided' || learningState().stage === 'learn' ? '1. Learn → 2. Try together' : '3. Try yourself → 4. Understand'}</span><button id="review-spell" class="quiet-button">Review this spell</button></section>` : ''}
+        ${hasTeaching() ? `<section class="learning-strip frame" aria-label="Learning steps"><span>${learningState().stage === 'done' ? `✓ ${lesson().topic} mastered` : learningState().stage === 'guided' || learningState().stage === 'learn' ? '1. Learn → 2. Try together' : '3. Try yourself → 4. Understand'}</span><button id="stage-practice" class="quiet-button">3 extra commissions →</button><button id="review-spell" class="quiet-button">Review this spell</button></section>` : ''}
         <div class="workbench-grid">
           <section class="editor-panel frame" aria-labelledby="editor-title">
             <div class="panel-heading"><h2 id="editor-title"><span class="cyan" aria-hidden="true">&gt;_</span> Your incantation</h2><span class="small-label">SQL QUERY</span></div>
@@ -275,7 +276,16 @@ function explainError(message) {
   return message;
 }
 
+function enterWorkshop() {
+  if (!story.seen.practice) { beginStory('practice', 'entry'); return; }
+  drafts[draftKey()] = editor.value;
+  cancelCast(); save(); editor.destroy();
+  openPractice($('#app'), lessons[index].id, render);
+}
+
 function bind() {
+  $('#workshop').addEventListener('click', enterWorkshop);
+  $('#stage-practice')?.addEventListener('click', enterWorkshop);
   $('.brand').addEventListener('click', event => { event.preventDefault(); goToLesson(0); });
   document.querySelectorAll('[data-lesson]').forEach(button => button.addEventListener('click', () => goToLesson(Number(button.dataset.lesson))));
   document.querySelectorAll('[data-table]').forEach(button => button.addEventListener('click', () => { selectedTable = button.dataset.table; renderSource(); }));
@@ -370,7 +380,7 @@ function beginStory(id, mode, target = null) {
 
 function showPendingStory() {
   const pending = story.pending;
-  const label = pending.mode === 'replay' ? 'Return to your lesson' : pending.mode === 'transition' ? (pending.target ? 'Follow the story →' : 'View your spellbook') : pending.id === 'prologue' ? 'Enter the academy →' : hasTeaching() ? 'Learn this spell →' : 'Begin the trial →';
+  const label = pending.id === 'practice' && pending.mode === 'entry' ? 'Enter the workshop →' : pending.mode === 'replay' ? 'Return to your lesson' : pending.mode === 'transition' ? (pending.target ? 'Follow the story →' : 'View your spellbook') : pending.id === 'prologue' ? 'Enter the academy →' : hasTeaching() ? 'Learn this spell →' : 'Begin the trial →';
   storyPlayer.open(storyEpisode(pending.id), pending.page, label);
 }
 
@@ -383,7 +393,8 @@ function finishStory() {
     const nextIndex = lessons.findIndex(item => item.id === pending.target);
     if (nextIndex >= 0) goToLesson(nextIndex);
     else openBook();
-  } else if (pending.mode === 'entry') offerStory();
+  } else if (pending.mode === 'entry' && pending.id === 'practice') enterWorkshop();
+  else if (pending.mode === 'entry') offerStory();
   else $('#story-journal').focus();
 }
 
@@ -393,7 +404,7 @@ function openStoryJournal() {
     journal = document.createElement('dialog'); journal.id = 'story-journal-dialog'; journal.className = 'spellbook';
     journal.setAttribute('aria-labelledby', 'journal-title'); $('#app').append(journal);
   }
-  const ids = ['prologue', ...lessons.flatMap(item => [item.id, `after:${item.id}`])].filter(id => id === 'prologue' || story.seen[id]);
+  const ids = ['prologue', 'practice', ...lessons.flatMap(item => [item.id, `after:${item.id}`])].filter(id => id === 'prologue' || story.seen[id]);
   journal.innerHTML = `<div class="panel-heading"><h2 id="journal-title">Your story so far</h2><button id="close-story-journal" class="quiet-button">Close ×</button></div><p class="book-intro">Revisit the scenes you have reached. Replaying a story does not change your lesson progress.</p><div class="book-lessons">${ids.map(id => `<button data-story="${id}">${escape(storyEpisode(id).title)}</button>`).join('')}</div>`;
   journal.querySelector('#close-story-journal').onclick = () => journal.close();
   journal.querySelectorAll('[data-story]').forEach(button => { button.onclick = () => beginStory(button.dataset.story, 'replay'); });
