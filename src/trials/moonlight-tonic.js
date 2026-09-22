@@ -2,6 +2,8 @@ export default {
   "id": "moonlight-tonic",
   "title": "The moonlight recipe",
   "place": "Potion Workshop",
+  "scene": "workshop",
+  "speaker": "IONA",
   "topic": "INNER JOIN",
   "brief": "Reconnect a potion recipe with its ingredient names.",
   "story": "The recipe book records ingredient IDs, but the jars have names. To brew Moonlight tonic, connect the recipe, its entries, and the ingredient catalog.",

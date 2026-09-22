@@ -1,7 +1,9 @@
 export default {
   "id": "empty-shelves",
   "title": "The empty shelf",
-  "place": "Potion Workshop",
+  "place": "The Storeroom",
+  "scene": "storeroom",
+  "speaker": "IONA",
   "topic": "LEFT JOIN \u00b7 NULL",
   "brief": "Inspect every ingredient, even those missing from stock.",
   "story": "Before we brew, check the cupboard. An ordinary join hides ingredients without a stock record. We need to see every ingredient, including the empty shelf.",

@@ -3,6 +3,7 @@ import './style.css';
 import { createSqlEditor, initialSlots } from './sql-editor.js';
 import { lessons, fixture, tableInfo } from './lessons.js';
 import { matchesFilter, describeFilter, filterExplanation } from './row-filters.js';
+import { sceneForLesson } from './scenes.js';
 import { keywords } from './query-engine.js';
 import { migrateLearning, completeLesson, progressVersion } from './learning-progress.js';
 
@@ -70,10 +71,10 @@ function render() {
       <main>
         <div class="world-grid">
           <section class="scene frame" aria-label="${escape(current.place)}">
-            <img class="scene-art" src="/art/${current.scene === 'herbarium' ? 'herbarium' : 'archive'}.png" alt="${current.scene === 'herbarium' ? 'A moonlit EGA greenhouse with ingredient trays, a balance, and a potency-testing bench.' : 'An apprentice wizard and owl in a cyan and magenta pixel-art library, beside a summoning circle.'}" />
+            <img class="scene-art" src="${sceneForLesson(current).src}" alt="${escape(sceneForLesson(current).alt)}" />
             <div class="scene-location"><span class="live-dot" aria-hidden="true"></span> ${escape(current.place)} <span> / NIGHT 01</span></div>
             <div id="summons" class="summons" aria-hidden="true"><span>✧</span><span>◇</span><span>✧</span></div>
-            <div class="dialogue"><span class="speaker">✦ PROFESSOR QUILL</span><p id="dialogue-text">${escape(current.story)}</p><span class="dialogue-caret" aria-hidden="true">▼</span></div>
+            <div class="dialogue"><span class="speaker">✦ ${escape(current.speaker || 'PROFESSOR QUILL')}</span><p id="dialogue-text">${escape(current.story)}</p><span class="dialogue-caret" aria-hidden="true">▼</span></div>
           </section>
           <aside class="side-panels">
             <section class="mission frame"><div class="eyebrow">TRIAL 0${index + 1} <span>${escape(current.topic)}</span></div><h1>${escape(current.title)}</h1><p>${escape(current.instruction)}</p>${hasTeaching() ? `<p class="learning-status">${escape(learningStatus())}</p>` : ''}</section>
