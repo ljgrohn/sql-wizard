@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first six trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. All seven trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 
@@ -40,8 +40,7 @@ This produces a preview deployment. Promote the reviewed preview or use `npx ver
 
 - Progress and drafts stay in this browser, not across devices.
 - Seven playable trials, not the full curriculum. Grouping, CTE lessons, animal breeding, and alchemy are mapped in the plan but not yet authored as playable chapters.
-- The LEFT JOIN challenge retains the prototype teaching flow, with an illustrated storeroom story.
-- The SELECT, WHERE, potency, AND, two-table JOIN, and recipe trials distinguish guided completion from independent mastery and preserve solution assistance across reloads. The final trial retains the original prototype teaching flow.
+- All seven trials distinguish guided completion from independent mastery and preserve solution assistance across reloads.
 - Hidden fixture checks are educational validation, not secure grading.
 - One SQLite dialect; PostgreSQL/MySQL differences are not taught in this version.
 

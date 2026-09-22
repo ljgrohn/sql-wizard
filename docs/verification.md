@@ -90,3 +90,10 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - The three-table recipe now teaches bridge entries, both matching IDs, aliases, text literals, and recipe quantities versus available stock before practice. Two guided insertion slots build Moonlight tonic; independent practice reads Ember draught; mastery after assistance reads all recipe entries.
 - 42 tests and production build pass, including duplicate-entry preservation, changed recipe IDs, wrong relationship rejection, tutorial output, and progress migration.
 - Browser checked the teaching page, prevention of casting with the second slot empty, Next guided slot, guided recipe result, independent Ember draught result, and mastery surviving reload. No browser errors.
+
+## Revised LEFT JOIN / NULL teaching — 2026-09-21
+
+- Teaches preserved left rows, unmatched right columns, known zero versus unknown quantity, IS NULL versus = NULL, and how WHERE filters can remove preserved rows. Guided practice shows all ingredients, independent practice finds missing stock records, and fresh mastery returns IDs, names, and quantities for all ingredients.
+- Scene labels use actual returned values to distinguish recorded amounts, empty (0), and unknown (NULL), with text as well as different borders/colors.
+- 46 tests and production build pass, including rejection of INNER JOIN, COALESCE-to-zero, unwanted quantity filters, and = NULL. Examples and walkthroughs agree with SQLite on changed fixtures.
+- Browser verified teaching, all four stock states, assistance persistence after reload, guided completion, fresh mastery, and mobile scene labels. No browser errors.

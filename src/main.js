@@ -167,7 +167,8 @@ function renderLearnedScene() {
     return;
   }
   $('#summons').classList.add('catalog-labels', 'active');
-  $('#summons').innerHTML = (lesson().resultCaption ? `<small class="scene-filter-caption">${escape(lesson().resultCaption)}</small>` : '') + last.result.values.map(row => `<span>${row.map(escape).join(' · ')}</span>`).join('');
+  const tokens = lesson().sceneTokens ? lesson().sceneTokens(last.result) : last.result.values.map(row => ({ label: row.map(value => value === null ? 'NULL' : value).join(' · '), kind: '' }));
+  $('#summons').innerHTML = (lesson().resultCaption ? `<small class="scene-filter-caption">${escape(lesson().resultCaption)}</small>` : '') + tokens.map(token => `<span class="${escape(token.kind)}">${escape(token.label)}</span>`).join('');
   $('#dialogue-text').textContent = last.message;
   renderSource();
 }
