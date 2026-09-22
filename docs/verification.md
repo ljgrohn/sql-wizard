@@ -62,3 +62,10 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Added the comparison lesson before AND, with a distinct generated EGA herbarium background. The built-in generation prompt and provenance are in `docs/herbarium-art-prompt.txt`; the asset is `public/art/herbarium.png`.
 - 28 tests and the static production build pass. Tests cover the boundary at 7, equivalent `> 6` for integer fixtures, rejection of `> 7` and unwanted glowing filters, all exercise variants, decimal counterexamples, and saved-trial identity across insertion.
 - Browser verified: lesson offered before typing, example returns only Crystal, guided `>= 7` returns Crystal and Emberroot, independent `< 7` returns Moonstone and Mushroom, mastery survives reload, and source-row explanations agree with results. Herbarium screenshot inspected; no browser errors.
+
+## Revised AND lesson — 2026-09-21
+
+- Reuses the herbarium with separate result labels. On entry, a labeled strength-only preview shows Crystal and Emberroot; successful guided AND leaves only Crystal. Emberroot's source-row annotation explicitly reads `potency >= 7: yes; glowing = 1: no`.
+- Teaching introduces AND before practice, using a different gentle/glowing example (Moonstone). Guided practice finds strong/glowing names, independent practice finds strong/non-glowing names, and the fresh mastery task returns strong/glowing IDs and names.
+- 32 tests pass and the static production build passes. Coverage includes equivalent integer thresholds, rejecting OR or single-condition answers, requiring AND practice, changed fixtures, visual-filter agreement, old AND progress migration, and assisted completion persistence. Existing comparison mastery and unrelated drafts survive migration.
+- Browser verified the two-to-one scene transition, correct row explanation, assistance surviving reload, guided completion followed by fresh mastery, persisted mastery, review access, and failed-query preservation of the earned scene. Mobile screenshot inspected at 390px with no page overflow; no browser errors.

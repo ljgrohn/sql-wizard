@@ -38,11 +38,11 @@ test('WHERE example and row inclusion visuals agree with actual SQLite results',
 });
 
 test('v2 migration preserves first lesson mastery, other trials, drafts and editor ranges', () => {
-  const original = { version: 2, index: 1, firstSpark: { stage: 'done', completedExercise: 'mastery', assisted: true, learned: true }, progress: { 'first-spark': 'complete', 'light-the-ward': 'complete', 'steady-flame': 'complete' }, drafts: { 'light-the-ward': 'SELECT name FROM ingredients WHERE glowing = 1;', 'first-spark:mastery': 'SELECT id, name FROM ingredients;' }, editorSlots: { 'first-spark:guided': [{ from: 7, to: 11, label: 'Column' }] } };
+  const original = { version: 2, index: 1, firstSpark: { stage: 'done', completedExercise: 'mastery', assisted: true, learned: true }, progress: { 'first-spark': 'complete', 'light-the-ward': 'complete', 'moonlight-tonic': 'complete' }, drafts: { 'light-the-ward': 'SELECT name FROM ingredients WHERE glowing = 1;', 'first-spark:mastery': 'SELECT id, name FROM ingredients;' }, editorSlots: { 'first-spark:guided': [{ from: 7, to: 11, label: 'Column' }] } };
   const migrated = migrateLearning(original);
   assert.equal(migrated.learning['first-spark'].stage, 'done');
   assert.equal(migrated.progress['first-spark'], 'complete');
-  assert.equal(migrated.progress['steady-flame'], 'complete');
+  assert.equal(migrated.progress['moonlight-tonic'], 'complete');
   assert.equal(migrated.progress['light-the-ward'], undefined);
   assert.equal(migrated.learning['light-the-ward'].migrated, true);
   assert.deepEqual(migrated.drafts, original.drafts);

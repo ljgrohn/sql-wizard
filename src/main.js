@@ -150,7 +150,14 @@ function renderSource() {
 
 function renderLearnedScene() {
   const last = learningState().lastSuccess;
-  if (!last) return;
+  if (!last) {
+    const preview = lesson().scenePreview;
+    if (!preview) return;
+    const candidates = fixture().ingredients.filter(row => matchesFilter(row, preview.filter));
+    $('#summons').classList.add('catalog-labels', 'active');
+    $('#summons').innerHTML = `<small class="scene-filter-caption">${escape(preview.caption)}</small>${candidates.map(row => `<span>${escape(row[1])}</span>`).join('')}`;
+    return;
+  }
   $('#summons').classList.add('catalog-labels', 'active');
   $('#summons').innerHTML = last.result.values.map(row => `<span>${row.map(escape).join(' · ')}</span>`).join('');
   $('#dialogue-text').textContent = last.message;
