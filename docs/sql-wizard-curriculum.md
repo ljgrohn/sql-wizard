@@ -1,6 +1,6 @@
 # SQL Wizard — curriculum proposal
 
-Status: reviewed direction; proceeding with the narrative and a small playable foundation. See `sql-wizard-story-and-build.md` for the campaign mapping and implementation milestones.
+Status: core topics are implemented across 31 playable stages, including four transfer assessments, with 93 crafting commissions. See `campaign-coverage.md` for the implementation map. Optional advanced topics and human pacing validation remain future work. The chapter breakdown below remains the curriculum reference, rather than a one-to-one list of game stages.
 
 ## Goal and boundaries
 

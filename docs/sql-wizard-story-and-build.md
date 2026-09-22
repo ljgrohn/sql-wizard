@@ -1,6 +1,6 @@
 # SQL Wizard — story and first build
 
-Next implementation steps after the first playtest: [next-steps.md](next-steps.md). That plan takes priority for onboarding, editor improvements, revised trial ordering, scene variation, and the per-trial commit sequence. The historical-scope section below records the original five-trial prototype. The current build has seven trials and an illustrated prologue, lesson entries, completion transitions, and a replayable Story journal. All seven trials use the revised teaching flow, with persisted assistance, guided practice, independent challenges, and fresh mastery tasks.
+Current implementation: 31 playable stages cover the core curriculum, including the sanctuary, observatory, and four expedition transfer assessments. Every stage has illustrated scenes, teaching, guided/independent/recovery problems, and three workshop crafting commissions. See [campaign-coverage.md](campaign-coverage.md) for the live stage map and [next-steps.md](next-steps.md) for remaining human playtesting. The campaign design below remains the narrative reference; the historical prototype and original delivery milestones are retained for context.
 
 ## Premise
 

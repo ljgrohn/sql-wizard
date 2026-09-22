@@ -1,3 +1,18 @@
+# Core campaign verification — 2026-09-22
+
+Verified against a local static production preview. This does not claim a new live deployment.
+
+- `npm test`: 89 passing tests. All 31 stages’ reference exercises and all 93 crafting commissions validate across three fixtures. Coverage includes row ordering, aliases, distinctness, NULL, date boundaries, grouped totals, self-pairs, fanout, EXISTS correlations, UNION duplicates, and old-save compatibility.
+- `npm run build`: passes with the worker and bundled SQLite WASM. Vite reports a bundle-size advisory for the expanded main chunk (about 166 kB gzipped); code splitting remains a possible performance improvement.
+- `npm run test:journey`: the original seven-stage story/mastery journey passes, including the transition into the expanded campaign.
+- `npm run test:campaign`: all 24 added stages pass illustrated entry, live worked example, independent mastery, crafting, and return-to-lesson checks. Recovery after assistance and reload also passes.
+- `npm run test:practice`: incorrect answers, duplicate reward prevention, independent/assisted status, fresh attempts, reload, lesson isolation, and mobile layout pass.
+- Manually verified the guided WITH insertion and three executed intermediate CTE tables. Desktop and 390px mobile screenshots were inspected; no page-width overflow, missing scene art, or browser errors were observed in these checks.
+
+Beginner retention and pacing still need human playtesting. Final stages provide worked examples and guided warm-ups before blank-editor transfer problems; they are supported assessments rather than closed-book exams. A full assistive-technology audit and testing in additional browser engines remain outstanding.
+
+The reports below are historical snapshots of earlier builds.
+
 # First playable slice — verification
 
 Verified locally on 2026-09-21. This is not a claim of a live Vercel deployment.
