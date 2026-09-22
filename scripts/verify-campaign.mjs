@@ -22,13 +22,15 @@ try {
     assert.ok(evaluate('document.querySelector("[data-example-result] table").rows.length > 0'));
     click('#skip-teaching');
     query(lesson.exercises.independent.solution); browser('wait', '#feedback.success');
+    click('#next'); query(lesson.exercises.mastery.solution); browser('wait', '#feedback.success');
     assert.match(browser('get', 'text', '.learning-status'), /mastered/);
     if (['grouped-orders', 'restoration-pipeline', 'expedition-restoration'].includes(lesson.id)) {
       browser('reload'); browser('wait', '#next:not([hidden])');
       assert.match(browser('get', 'text', '.learning-status'), /mastered/);
       browser('screenshot', `artifacts/campaign/${lesson.id}.png`, '--full');
     }
-    click('#stage-practice');
+    click('#workshop');
+    click(`[data-practice-chapter="${lesson.id}"]`);
     if (evaluate('Boolean(document.querySelector("#story-player[open]"))')) click('#story-skip');
     browser('wait', '#craft-query');
     query(practiceByLesson[lesson.id][0].solution); browser('wait', '#craft-feedback.success');

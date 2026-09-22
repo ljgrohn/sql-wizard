@@ -7,7 +7,7 @@ const browser = (...args) => execFileSync('npx', ['--yes', 'agent-browser', '--s
 const evaluate = expression => JSON.parse(browser('eval', expression));
 const click = selector => { browser('scrollintoview', selector); browser('click', selector); };
 const query = sql => { browser('focus', '.cm-content'); browser('keyboard', 'inserttext', sql); browser('press', 'Control+Enter'); };
-const workshop = () => { click('#workshop'); if (evaluate('Boolean(document.querySelector("#story-player[open]"))')) click('#story-skip'); browser('wait', '#craft-query'); };
+const workshop = () => { click('#workshop'); click('#resume-practice'); if (evaluate('Boolean(document.querySelector("#story-player[open]"))')) click('#story-skip'); browser('wait', '#craft-query'); };
 mkdirSync('artifacts/practice', { recursive: true });
 try {
   browser('open', process.argv[2] || 'http://127.0.0.1:4173');
@@ -46,7 +46,7 @@ try {
   browser('set', 'viewport', '1440', '1000');
   browser('screenshot', 'artifacts/practice/workshop-desktop.png', '--full');
   click('#leave-workshop'); browser('wait', '#query');
-  click('#stage-practice'); browser('wait', '#craft-query');
+  click('#workshop'); click('[data-practice-chapter="first-spark"]'); browser('wait', '#craft-query');
   assert.equal(browser('get', 'text', '#craft-title'), first.title);
   click('#leave-workshop'); browser('wait', '#query');
   const before = JSON.parse(progressBefore), after = JSON.parse(evaluate('localStorage.getItem("sql-wizard-progress-v5")'));

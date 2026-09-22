@@ -1,3 +1,12 @@
+# Progressive lesson flow — 2026-09-22
+
+Lessons now offer three successive problems to every learner: guided, independent, and a final challenge. Correct answers reveal Next beside Cast Spell; editing or submitting a wrong answer hides it. Existing saved mastery remains earned. Practice opens a chapter chooser with additional crafting problems and a resume action. The current question is repeated above the editor.
+
+- 91 automated tests pass, including the three-step state sequence and preserved older mastery.
+- Production build passes.
+- Browser checks cover the revised original lesson journey and the chapter-practice flow, including inventory, assistance, reload and returning to lessons.
+- Desktop and 390px mobile checks confirm Next is adjacent to Cast Spell on the same row without page overflow.
+
 # Core campaign verification — 2026-09-22
 
 Verified against a local static production preview. This does not claim a new live deployment.

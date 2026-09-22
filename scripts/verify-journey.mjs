@@ -38,6 +38,7 @@ try {
     }
     typeQuery(sql); browser('wait', '#feedback.success');
     assert.deepEqual(evaluate('[...document.querySelectorAll("#result-table td")].map(cell=>cell.textContent)'),cells);
+    click('#next'); typeQuery(lessons[i].exercises.mastery.solution); browser('wait', '#feedback.success');
     assert.match(browser('get','text','.learning-status'), /mastered/);
     browser('reload'); browser('wait', '#next:not([hidden])');
     assert.match(browser('get','text','.learning-status'), /mastered/);

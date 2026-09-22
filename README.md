@@ -2,7 +2,7 @@
 
 A browser game that teaches real SQL through an apprentice wizard’s training. The campaign now has **31 stages and 93 crafting commissions**, covering reading and filtering through grouping, safe joins, subqueries, CTEs, and four final assessments on unfamiliar expedition data.
 
-Every stage includes illustrated story scenes, a teaching page, a worked example, guided practice, an independent problem, a fresh mastery problem after solution assistance, and three additional spell/potion/charm commissions.
+Every stage includes illustrated story scenes, a teaching page, a worked example, guided practice, an independent problem, a final challenge that builds on the first two problems, and three additional spell/potion/charm commissions.
 
 ## Run locally
 
@@ -13,13 +13,13 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. All stages open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress, and the lesson selector lets you jump to any stage.
+Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. All stages open with spellbook explanations and examples, then three problems: guided, independent, and a final challenge. After each correct answer, **Next** appears beside **Cast Spell**. “Review this spell” reopens the current teaching page. The spellbook lists progress, and the lesson selector lets you jump to any stage.
 
 ## Practice and crafting
 
-Choose **Practice & craft** in the header, or **3 extra commissions** within any stage, to enter Iona’s workshop. Each stage has three additional problems that create spells, potions, or charms for your satchel. All stages are available for practice; the SQL builds on the matching lesson’s concepts.
+Choose **Practice** in the header to browse individual chapters, then select a chapter for its three additional crafting problems. The chapter chooser also offers a resume button for your last problem. Each stage has three additional problems that create spells, potions, or charms for your satchel. All stages are available for practice; the SQL builds on the matching lesson’s concepts.
 
-Crafting checks your query against three catalogs, so copying fixed answers does not earn a creation. Hints end with a worked example; using it marks that attempt as assisted, including after reload. **Start a fresh attempt** clears the query and assistance for another try. Each commission contributes one collectible, and solving it independently upgrades its record. Crafts and drafts are saved separately from lesson mastery. Reopen the workshop after a reload to resume the commission.
+Crafting checks your query against three catalogs, so copying fixed answers does not earn a creation. Hints end with a worked example; using it marks that attempt as assisted, including after reload. **Start a fresh attempt** clears the query and assistance for another try. Each commission contributes one collectible, and solving it independently upgrades its record. Crafts and drafts are saved separately from lesson mastery. Use **Practice → Resume** after a reload to continue your last problem.
 
 ## Check and build
 

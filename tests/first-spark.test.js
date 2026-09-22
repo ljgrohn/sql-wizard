@@ -49,5 +49,5 @@ test('solution assistance survives reload and requires a fresh independent varia
   assert.equal(completed.independentDone, true);
   assert.equal(completeFirstSpark({ ...completed, stage: 'mastery' }).stage, 'done');
   assert.equal(completeFirstSpark({ stage: 'guided' }).stage, 'guided');
-  assert.equal(completeFirstSpark({ stage: 'independent', assisted: false }).stage, 'done');
+  assert.equal(completeFirstSpark({ stage: 'independent', assisted: false }).stage, 'independent');
 });

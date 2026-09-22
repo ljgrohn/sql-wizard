@@ -43,7 +43,7 @@ const lesson = () => hasTeaching() ? { ...lessons[index], ...lessons[index].exer
 const draftKey = () => hasTeaching() ? `${lesson().id}:${exercise()}` : lesson().id;
 const learningStatus = (current = lessons[index]) => {
   const state = learning[current.id];
-  return state.stage === 'done' ? `${current.topic} mastered` : progress[current.id] === 'guided' ? 'Guided completion · fresh challenge available' : state.learned ? `${current.topic} reviewed · practice in progress` : `Learn ${current.topic}`;
+  return state.stage === 'done' ? `${current.topic} mastered` : progress[current.id] === 'guided' ? 'Two problems complete · final challenge' : state.learned ? `${current.topic} reviewed · practice in progress` : `Learn ${current.topic}`;
 };
 
 function save() {
@@ -68,15 +68,15 @@ function render() {
   selectedTable = current.tables.includes(selectedTable) ? selectedTable : current.tables[0];
   solved = false;
   hintLevel = 0;
-  const completed = lessons.filter(l => progress[l.id]).length;
+  const completed = lessons.filter(l => progress[l.id] === 'complete').length;
   $('#app').innerHTML = `
     <div class="game-shell">
       <header class="masthead">
         <a class="brand" href="#" aria-label="SQL Wizard home"><span class="brand-star" aria-hidden="true">✦</span> SQL WIZARD<span class="edition">THE RETURNING MOON</span></a>
-        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="workshop" class="quiet-button">Practice & craft</button><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
+        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="workshop" class="quiet-button">Practice</button><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
       </header>
       <label class="chapter-jump">Jump to a lesson <select id="lesson-select">${lessons.map((l, i) => `<option value="${i}" ${i === index ? 'selected' : ''}>${String(i + 1).padStart(2, '0')} · ${escape(l.title)}</option>`).join('')}</select></label>
-      <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : String(i + 1).padStart(2, '0')}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
+      <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] === 'complete' ? '✓' : String(i + 1).padStart(2, '0')}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
       <main>
         <div class="world-grid">
           <section class="scene frame" aria-label="${escape(current.place)}">
@@ -94,33 +94,33 @@ function render() {
             </section>
           </aside>
         </div>
-        ${hasTeaching() ? `<section class="learning-strip frame" aria-label="Learning steps"><span>${learningState().stage === 'done' ? `✓ ${lesson().topic} mastered` : learningState().stage === 'guided' || learningState().stage === 'learn' ? '1. Learn → 2. Try together' : '3. Try yourself → 4. Understand'}</span><button id="stage-practice" class="quiet-button">3 extra commissions →</button><button id="review-spell" class="quiet-button">Review this spell</button></section>` : ''}
+        ${hasTeaching() ? `<section class="learning-strip frame" aria-label="Learning steps"><span>${learningState().stage === 'done' ? `✓ ${lesson().topic} mastered` : learningState().stage === 'guided' || learningState().stage === 'learn' ? 'Problem 1 of 3 · Start with guidance' : exercise() === 'independent' ? 'Problem 2 of 3 · Try it yourself' : 'Problem 3 of 3 · Put it together'}</span><button id="review-spell" class="quiet-button">Review this spell</button></section>` : ''}
         <div class="workbench-grid">
           <section class="editor-panel frame" aria-labelledby="editor-title">
             <div class="panel-heading"><h2 id="editor-title"><span class="cyan" aria-hidden="true">&gt;_</span> Your incantation</h2><span class="small-label">SQL QUERY</span></div>
-            <p id="slot-guide" class="scaffold-note">${current.slots?.length ? current.slots.map(slot => escape(slot.label)).join(' · ') + ': type at the insertion point.' : 'Write your query below.'}</p>
+            <p class="problem-prompt">${escape(current.instruction)}</p><p id="slot-guide" class="scaffold-note">${current.slots?.length ? current.slots.map(slot => escape(slot.label)).join(' · ') + ': type at the insertion point.' : 'Write your query below.'}</p>
             <div id="query" class="code-wrap"></div>
             ${current.slots?.length > 1 ? '<button id="next-slot" class="text-button">Next guided slot</button>' : ''}
-            <div class="editor-actions"><div class="secondary-actions"><button id="hint" class="text-button">Need a hint?</button><button id="reset" class="text-button">Reset query</button></div><button id="cast" class="cast-button"><span aria-hidden="true">✦</span> CAST SPELL</button></div>
+            <div class="editor-actions"><div class="secondary-actions"><button id="hint" class="text-button">Need a hint?</button><button id="reset" class="text-button">Reset query</button></div><div class="cast-controls"><button id="cast" class="cast-button"><span aria-hidden="true">✦</span> CAST SPELL</button><button id="next" class="next-button" hidden>Next →</button></div></div>
             <span id="keyboard-tip" class="keyboard-tip">Tab: two spaces / indent selection · Shift+Tab: outdent · Escape then Tab: leave editor · Ctrl / ⌘ + Enter: cast</span>
             <div id="hint-content" class="hint-content" hidden></div>
           </section>
           <section class="result-panel frame" aria-labelledby="result-title">
             <div class="panel-heading"><h2 id="result-title">Spell result</h2><span id="row-count" class="small-label">AWAITING QUERY</span></div>
             <div id="feedback" class="feedback" role="status" aria-live="polite"><span class="waiting-rune" aria-hidden="true">◇</span><p>The circle is quiet.<br><span>Write a query and cast your first spell.</span></p></div>
-            <div id="result-table"></div><button id="next" class="next-button" hidden>${index === lessons.length - 1 ? 'Finish the chapter →' : 'Continue the story →'}</button>
+            <div id="result-table"></div>
           </section>
         </div>
         <details class="field-note"><summary><span>✧ FIELD NOTES</span> ${escape(current.topic)} <span class="note-open">Read the lesson +</span></summary><p>${escape(current.teaching)}</p>${current.tables.length > 1 ? `<p class="relationship">${escape(current.relationships || 'recipes.id → recipe_items.recipe_id; recipe_items.ingredient_id → ingredients.id; ingredients.id → stock.ingredient_id')}</p>` : ''}</details>
       </main>
       <footer><span>NO TIMERS. JUST A LITTLE MAGIC.</span><span id="save-state">Progress saved on this device</span></footer>
     </div>
-    <dialog id="spellbook" class="spellbook"><div class="panel-heading"><h2>Your spellbook</h2><button id="close-book" class="quiet-button" aria-label="Close spellbook">Close ×</button></div><p class="book-intro">Restore the ward, one query at a time.</p><div class="book-lessons">${lessons.map((l, i) => `<button data-book-lesson="${i}"><span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.tutorial ? learningStatus(l) : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small></button>`).join('')}</div><h3>Keep practicing</h3><p class="roadmap-copy">Every stage has three extra commissions in Practice & craft. Build your collection of spells, potions, and charms, then return to any lesson for a refresher.</p><h3>Future advanced studies</h3><p class="roadmap-copy">Window functions, recursive queries, and additional set operations are optional future expansions.</p><p class="book-footnote">Your progress stays in this browser. This build contains ${lessons.length} trials.</p></dialog>`;
+    <dialog id="spellbook" class="spellbook"><div class="panel-heading"><h2>Your spellbook</h2><button id="close-book" class="quiet-button" aria-label="Close spellbook">Close ×</button></div><p class="book-intro">Restore the ward, one query at a time.</p><div class="book-lessons">${lessons.map((l, i) => `<button data-book-lesson="${i}"><span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.tutorial ? learningStatus(l) : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small></button>`).join('')}</div><h3>Keep practicing</h3><p class="roadmap-copy">Every chapter has more exercises in Practice. Build your collection of spells, potions, and charms, then return to any lesson for a refresher.</p><h3>Future advanced studies</h3><p class="roadmap-copy">Window functions, recursive queries, and additional set operations are optional future expansions.</p><p class="book-footnote">Your progress stays in this browser. This build contains ${lessons.length} trials.</p></dialog>`;
   let doc = typeof drafts[draftKey()] === 'string' ? drafts[draftKey()] : current.starter;
   if (doc === current.legacyStarter) doc = current.starter;
   const slots = initialSlots(current, doc, editorSlots[draftKey()]);
   editor = createSqlEditor({ parent: $('#query'), doc, slots,
-    onChange: (value, ranges) => { drafts[draftKey()] = value; editorSlots[draftKey()] = ranges; save(); },
+    onChange: (value, ranges) => { solved = false; $('#next').hidden = true; drafts[draftKey()] = value; editorSlots[draftKey()] = ranges; save(); },
     onCast: cast,
   });
   $('#next-slot')?.addEventListener('click', () => editor.nextSlot());
@@ -140,7 +140,7 @@ function render() {
       solved = true;
       $('#next').hidden = false;
     }
-    $('#next').textContent = learningState().stage === 'done' ? 'Continue the story →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
+    $('#next').textContent = learningState().stage === 'done' ? 'Next chapter →' : 'Next →';
   }
   if (hasTeaching()) renderLearnedScene();
   storyPlayer = createStoryPlayer($('#app'), { onPage: page => { story.pending.page = page; save(); }, onFinish: finishStory });
@@ -251,7 +251,7 @@ function cast() {
           learning[lesson().id] = completeLesson(learningState());
           if (learningState().stage === 'done') progress[lesson().id] = 'complete';
           else if (learningState().stage === 'independent') progress[lesson().id] = 'guided';
-          $('#next').textContent = learningState().stage === 'done' ? 'Continue the story →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
+          $('#next').textContent = learningState().stage === 'done' ? 'Next chapter →' : 'Next →';
           $('.learning-status').textContent = learningStatus();
           if (learningState().stage === 'done') $('.learning-strip > span').textContent = `✓ ${lesson().topic} mastered`;
         } else {
@@ -263,8 +263,8 @@ function cast() {
         $('#dialogue-text').textContent = data.message;
         $('#next').hidden = false;
         const nav = document.querySelector(`[data-lesson="${index}"] .step-number`);
-        nav.textContent = progress[lesson().id] ? '✓' : String(index + 1).padStart(2, '0');
-        $('.rank span').textContent = `${lessons.filter(l => progress[l.id]).length}/${lessons.length}`;
+        nav.textContent = progress[lesson().id] === 'complete' ? '✓' : String(index + 1).padStart(2, '0');
+        $('.rank span').textContent = `${lessons.filter(l => progress[l.id] === 'complete').length}/${lessons.length}`;
       }
     };
     worker.onerror = event => { event.preventDefault(); fail('The archive could not load. Try casting again, or refresh the page.'); };
@@ -281,7 +281,6 @@ function explainError(message) {
 }
 
 function enterWorkshop(targetLessonId = null) {
-  if (!story.seen.practice) { beginStory('practice', 'entry', targetLessonId); return; }
   drafts[draftKey()] = editor.value;
   cancelCast(); save(); editor.destroy();
   openPractice($('#app'), targetLessonId || lessons[index].id, render, { resume: !targetLessonId });
@@ -290,7 +289,6 @@ function enterWorkshop(targetLessonId = null) {
 function bind() {
   $('#lesson-select').addEventListener('change', event => goToLesson(Number(event.target.value)));
   $('#workshop').addEventListener('click', () => enterWorkshop());
-  $('#stage-practice')?.addEventListener('click', () => enterWorkshop(lessons[index].id));
   $('.brand').addEventListener('click', event => { event.preventDefault(); goToLesson(0); });
   document.querySelectorAll('[data-lesson]').forEach(button => button.addEventListener('click', () => goToLesson(Number(button.dataset.lesson))));
   document.querySelectorAll('[data-table]').forEach(button => button.addEventListener('click', () => { selectedTable = button.dataset.table; renderSource(); }));
@@ -308,7 +306,7 @@ function bind() {
     if (!solved) return;
     if (hasTeaching() && learningState().stage !== 'done') {
       learningState().stage = exercise() === 'guided' ? 'independent' : 'mastery';
-      save(); render(); focusQuery(); return;
+      save(); render(); $('.editor-panel').scrollIntoView({ block: 'start' }); focusQuery(); return;
     }
     beginStory(`after:${lesson().id}`, 'transition', lessons[index + 1]?.id || null);
   });

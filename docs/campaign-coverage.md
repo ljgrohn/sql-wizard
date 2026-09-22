@@ -1,6 +1,6 @@
 # Playable campaign coverage
 
-The campaign retains the original seven-stage introduction and appends 24 stages. Each has a teaching page, worked example, guided query, blank independent query, a different recovery challenge after assisted completion, story entry/ending, and three crafting commissions. Total: 31 stages, 93 lesson exercises, and 93 crafting commissions.
+The campaign retains the original seven-stage introduction and appends 24 stages. Each has a teaching page, worked example, guided query, blank independent query, a final challenge for every learner, story entry/ending, and three crafting commissions. Total: 31 stages, 93 lesson exercises, and 93 crafting commissions.
 
 ## Stage map
 

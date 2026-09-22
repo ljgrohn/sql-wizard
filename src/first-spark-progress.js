@@ -16,6 +16,6 @@ export function migrateProgress(saved = {}) {
 
 export function completeFirstSpark(state) {
   if (state.stage === 'guided') return { ...state, guidedDone: true };
-  if (state.stage === 'independent' && state.assisted) return { ...state, independentDone: true };
+  if (state.stage === 'independent') return { ...state, independentDone: true };
   return { ...state, completedExercise: state.stage === 'done' ? state.completedExercise : state.stage, stage: 'done', learned: true };
 }

@@ -60,5 +60,5 @@ test('WHERE solution assistance and stage survive reload, while guided practice 
   assert.equal(completeLesson({ ...state, stage: 'mastery' }).stage, 'done');
   assert.equal(completeLesson({ stage: 'guided' }).guidedDone, true);
   assert.equal(completeLesson({ stage: 'guided' }).stage, 'guided');
-  assert.equal(completeLesson({ stage: 'independent', assisted: false }).stage, 'done');
+  assert.equal(completeLesson({ stage: 'independent', assisted: false }).stage, 'independent');
 });
