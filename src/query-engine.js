@@ -1,3 +1,4 @@
+import { ordersSchema } from './orders-data.js';
 import { fixture, lessons } from './lessons.js';
 
 const schema = `
@@ -15,8 +16,9 @@ export function keywords(sql) {
 export function createDatabase(SQL, variant = 0) {
   const db = new SQL.Database();
   try {
-    db.run(schema);
+    db.run(schema + ordersSchema);
     for (const [table, rows] of Object.entries(fixture(variant))) {
+      if (!rows.length) continue;
       const statement = db.prepare(`INSERT INTO ${table} VALUES (${rows[0].map(() => '?').join(',')})`);
       try { for (const row of rows) statement.run(row); } finally { statement.free(); }
     }
@@ -47,8 +49,10 @@ export function executeQuery(db, sql) {
   } finally { statement.free(); }
 }
 
-export function sameResult(actual, expected) {
+export function sameResult(actual, expected, options = {}) {
+  if (options.expectedColumns && JSON.stringify(actual.columns) !== JSON.stringify(options.expectedColumns)) return false;
   if (actual.columns.length !== expected.columns.length || actual.values.length !== expected.values.length) return false;
+  if (options.ordered) return JSON.stringify(actual.values) === JSON.stringify(expected.values);
   // Compare multisets: order is not required by these lessons, but duplicates count.
   const rows = result => result.values.map(row => JSON.stringify(row)).sort();
   return JSON.stringify(rows(actual)) === JSON.stringify(rows(expected));
@@ -67,15 +71,20 @@ export function evaluate(SQL, lessonId, sql, exercise) {
     try {
       const result = executeQuery(db, sql);
       const expected = executeQuery(db, lesson.solution);
-      const match = sameResult(result, expected);
+      const match = sameResult(result, expected, lesson);
       if (!variant) { actual = result; visibleMatch = match; }
       correct &&= match;
     } finally { db.close(); }
   }
-  const usesConcept = !lesson.requires || keywords(sql).includes(lesson.requires);
+  const usesConcept = usesRequiredConcepts(sql, lesson.requires);
   let message = 'Your query runs, but its result does not match the request yet. Check the requested columns and conditions.';
   if (visibleMatch && !correct) message = 'This matches the current shelves, but not a changed catalog. Use the table relationships and conditions rather than fixed names or IDs.';
-  if (correct && !usesConcept) message = `Your result is right. For this lesson, practice using ${lesson.requires === 'LEFT' ? 'LEFT JOIN' : lesson.requires} to connect the tables.`;
+  if (correct && !usesConcept) message = `Your result is right. For this lesson, practice using ${[].concat(lesson.requires || []).map(word => word === 'LEFT' ? 'LEFT JOIN' : word).join(', ')} as requested.`;
   if (correct && usesConcept) message = lesson.success;
   return { result: actual, correct: correct && usesConcept, message };
+}
+
+export function usesRequiredConcepts(sql, required) {
+  const words = keywords(sql);
+  return !required || [].concat(required).every(word => words.includes(word));
 }

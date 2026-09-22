@@ -1,11 +1,13 @@
+import { ordersFixture, ordersTableInfo } from './orders-data.js';
 export const tableInfo = {
+  ...ordersTableInfo,
   ingredients: { description: 'One row per ingredient. id is its unique identifier.', columns: ['id', 'name', 'glowing', 'potency'] },
   recipes: { description: 'One row per potion recipe. id identifies the recipe.', columns: ['id', 'name'] },
   recipe_items: { description: 'One ingredient per recipe entry. recipe_id → recipes.id; ingredient_id → ingredients.id.', columns: ['recipe_id', 'ingredient_id', 'quantity'] },
   stock: { description: 'One recorded stock quantity per ingredient. ingredient_id → ingredients.id. Missing records are unknown, not zero.', columns: ['ingredient_id', 'quantity'] },
 };
 
-export function fixture(variant = 0) {
+function originalFixture(variant = 0) {
   if (variant === 1) return {
     ingredients: [[11, 'Azure shard', 1, 7], [12, 'Night pearl', 1, 3], [13, 'Bitter cap', 0, 9], [14, 'Sun root', 0, 7], [15, 'Star glass', 1, 12]],
     recipes: [[9, 'Moonlight tonic'], [10, 'Ember draught']],
@@ -25,3 +27,5 @@ export function fixture(variant = 0) {
     stock: [[1, 8], [2, 0], [3, 12]],
   };
 }
+
+export function fixture(variant = 0) { return { ...originalFixture(variant), ...ordersFixture(variant) }; }

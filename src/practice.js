@@ -1,4 +1,4 @@
-import { createDatabase, executeQuery, keywords, sameResult } from './query-engine.js';
+import { createDatabase, executeQuery, usesRequiredConcepts, sameResult } from './query-engine.js';
 
 const stockJoin = 'FROM ingredients AS i\nJOIN stock AS s ON i.id = s.ingredient_id';
 const fullStockJoin = 'FROM ingredients AS i\nLEFT JOIN stock AS s ON i.id = s.ingredient_id';
@@ -159,12 +159,12 @@ export function evaluatePractice(SQL, problemId, sql) {
     try {
       const actual = executeQuery(db, sql);
       const expected = executeQuery(db, task.expectedSql);
-      const match = sameResult(actual, expected);
+      const match = sameResult(actual, expected, task);
       if (variant === 0) { result = actual; visibleMatch = match; }
       correct &&= match;
     } finally { db.close(); }
   }
-  const usesConcept = !task.requires || keywords(sql).includes(task.requires);
+  const usesConcept = usesRequiredConcepts(sql, task.requires);
   let message = 'The craft needs another adjustment. Check the requested columns, conditions, and table relationships.';
   if (visibleMatch && !correct) message = 'This fits today’s shelves, but not a changed catalog. Use the requested conditions and relationships instead of fixed answers.';
   if (correct && !usesConcept) message = `The result is right. Practice using ${task.requires === 'LEFT' ? 'LEFT JOIN' : task.requires} to complete this craft.`;
