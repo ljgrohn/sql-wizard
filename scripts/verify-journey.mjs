@@ -2,6 +2,7 @@
 // Uses a fresh agent-browser session; never alters an existing browser save.
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
+import { lessons } from '../src/lessons.js';
 import { mkdirSync } from 'node:fs';
 const url = process.argv[2] || 'http://127.0.0.1:4173';
 const session = `sql-journey-${Date.now()}`;
@@ -50,6 +51,10 @@ try {
     click('#story-next');
     if (i < trials.length - 1) { browser('wait','#story-player[open]'); click('#story-skip'); }
     console.log(`PASS ${title}: result, saved mastery, and story transition`);
+  }
+  if (lessons.length > trials.length) {
+    browser('wait', '#story-player[open]'); click('#story-skip');
+    browser('wait', '#spell-lesson[open]'); click('#skip-teaching'); click('#journey');
   }
   browser('wait','#spellbook[open]');
   assert.equal(evaluate('[...document.querySelectorAll(".book-lessons small")].filter(node=>node.textContent.includes("mastered")).length'),7);

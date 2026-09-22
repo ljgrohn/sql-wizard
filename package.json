@@ -9,7 +9,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
     "test:journey": "node scripts/verify-journey.mjs",
-    "test:practice": "node scripts/verify-practice.mjs"
+    "test:practice": "node scripts/verify-practice.mjs",
+    "test:campaign": "node scripts/verify-campaign.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",
