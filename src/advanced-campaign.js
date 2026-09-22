@@ -6,5 +6,22 @@ import missingCare from './trials/advanced/missing-care.js';
 import namedRituals from './trials/advanced/named-rituals.js';
 import restorationPipeline from './trials/advanced/restoration-pipeline.js';
 import combinedSignals from './trials/advanced/combined-signals.js';
+import expeditionManifest from './trials/advanced/expedition-manifest.js';
+import expeditionGaps from './trials/advanced/expedition-gaps.js';
+import expeditionPriorities from './trials/advanced/expedition-priorities.js';
+import expeditionRestoration from './trials/advanced/expedition-restoration.js';
 
-export const advancedCampaign = [sanctuaryPairs, habitatCensus, tangledLedgers, aboveAverage, missingCare, namedRituals, restorationPipeline, combinedSignals];
+export const advancedCampaign = [
+  sanctuaryPairs,
+  habitatCensus,
+  tangledLedgers,
+  aboveAverage,
+  missingCare,
+  namedRituals,
+  restorationPipeline,
+  combinedSignals,
+  expeditionManifest,
+  expeditionGaps,
+  expeditionPriorities,
+  expeditionRestoration,
+];
