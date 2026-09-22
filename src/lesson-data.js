@@ -1,6 +1,8 @@
+import { advancedFixture, advancedTableInfo } from './advanced-data.js';
 import { ordersFixture, ordersTableInfo } from './orders-data.js';
 export const tableInfo = {
   ...ordersTableInfo,
+  ...advancedTableInfo,
   ingredients: { description: 'One row per ingredient. id is its unique identifier.', columns: ['id', 'name', 'glowing', 'potency'] },
   recipes: { description: 'One row per potion recipe. id identifies the recipe.', columns: ['id', 'name'] },
   recipe_items: { description: 'One ingredient per recipe entry. recipe_id → recipes.id; ingredient_id → ingredients.id.', columns: ['recipe_id', 'ingredient_id', 'quantity'] },
@@ -28,4 +30,4 @@ function originalFixture(variant = 0) {
   };
 }
 
-export function fixture(variant = 0) { return { ...originalFixture(variant), ...ordersFixture(variant) }; }
+export function fixture(variant = 0) { return { ...originalFixture(variant), ...ordersFixture(variant), ...advancedFixture(variant) }; }

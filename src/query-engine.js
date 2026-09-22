@@ -1,3 +1,4 @@
+import { advancedSchema } from './advanced-data.js';
 import { ordersSchema } from './orders-data.js';
 import { fixture, lessons } from './lessons.js';
 
@@ -16,7 +17,7 @@ export function keywords(sql) {
 export function createDatabase(SQL, variant = 0) {
   const db = new SQL.Database();
   try {
-    db.run(schema + ordersSchema);
+    db.run(schema + ordersSchema + advancedSchema);
     for (const [table, rows] of Object.entries(fixture(variant))) {
       if (!rows.length) continue;
       const statement = db.prepare(`INSERT INTO ${table} VALUES (${rows[0].map(() => '?').join(',')})`);
