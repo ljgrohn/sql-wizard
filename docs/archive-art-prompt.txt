@@ -1,0 +1,5 @@
+Generated with the built-in image tool.
+Reference: output/mockups/sql-wizard-decades/1980s-mixed-ega-drawn-boxes.png
+Output: public/art/archive.png
+
+Edit target: provided SQL Wizard EGA mockup. Create a standalone GAME BACKGROUND ART ASSET: extract and extend ONLY the illustrated library scene to fill a landscape 3:2 image. Preserve the reference's exact coarse 1980s EGA dithered pixel-art style, very limited black electric blue cyan magenta white palette, side view apprentice with large wizard hat at left, owl on book stack at right, tall arched moon window and shelves, summoning ring at lower center. Remove ALL user-interface windows, all text, logo, title, table, panels, dialogue, borders and bottom editor entirely. Fill those areas with continuous library artwork. Summoning circle is empty, no floating crystals yet; game will overlay them. Apprentice and owl clearly visible with extra breathing room around them. Coarse deliberate pixel dithering, hard pixel edges, no smooth gradients, no modern painterly shading. No letters or text anywhere. This is an in-game background, not a screenshot or poster.
