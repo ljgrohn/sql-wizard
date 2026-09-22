@@ -21,6 +21,14 @@ npm run build
 npm run preview
 ```
 
+With the preview running, verify the full story and lesson journey in another terminal:
+
+```sh
+npm run test:journey -- http://127.0.0.1:4173
+```
+
+Use the actual preview port if it differs. This check uses `npx agent-browser` in a fresh browser session; it verifies seven independent answers, saved mastery, story transitions, and the mobile layout. Browser screenshots are saved under ignored `artifacts/journey/`.
+
 The query engine uses SQLite (SQL.js) in a worker with read-only fixtures, a timeout, and a result limit. Tests cover all lesson answers on changed datasets, equivalent answers, hard-coded-answer rejection, joins with missing records, duplicate results, CTE support, and write rejection.
 
 ## Vercel

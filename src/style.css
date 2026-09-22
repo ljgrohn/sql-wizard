@@ -15,3 +15,4 @@
 .story-art{object-fit:contain;background:#03030b;height:clamp(220px,42vh,390px)}
 @media(max-width:760px){.story-art{height:auto;max-height:32vh}}
 .catalog-labels .stock-empty{color:var(--yellow);border-color:var(--yellow)}.catalog-labels .stock-unknown{color:#dec7ff;border:2px dashed #dec7ff}.catalog-labels .stock-recorded{color:var(--cyan)}
+@media(max-width:760px){.scene{display:flex;flex-direction:column;justify-content:flex-end}.scene .scene-art{inset:0}.scene .catalog-labels.active{position:relative;inset:auto;margin:80px 16px 18px;z-index:1}.scene .dialogue{position:relative;inset:auto;margin:0 12px 12px}}

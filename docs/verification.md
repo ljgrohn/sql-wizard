@@ -97,3 +97,13 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Scene labels use actual returned values to distinguish recorded amounts, empty (0), and unknown (NULL), with text as well as different borders/colors.
 - 46 tests and production build pass, including rejection of INNER JOIN, COALESCE-to-zero, unwanted quantity filters, and = NULL. Examples and walkthroughs agree with SQLite on changed fixtures.
 - Browser verified teaching, all four stock states, assistance persistence after reload, guided completion, fresh mastery, and mobile scene labels. No browser errors.
+
+## Repeatable production journey — 2026-09-21
+
+`npm run test:journey -- http://127.0.0.1:4174` passed against the static production preview. The script uses a fresh agent-browser session and is saved at `scripts/verify-journey.mjs`.
+
+Verified all seven independent tasks through the editor, worker, and real SQLite result table; compared result cells to expected values; reloaded after every completion; followed each illustrated completion/entry transition; reached the ending and 7/7 mastered in the spellbook. Also checked an incorrect answer, prologue-page persistence, mobile width, and separation of result labels from dialogue. No browser errors.
+
+Mobile inspection exposed overlapping stock labels and dialogue when four tokens were shown. The scene now lays out labels above dialogue on narrow screens; all four recorded/empty/unknown labels remain visible. Confirmed at 390px and inspected `/tmp/stock-states-mobile-fixed.png`. The automated screenshot is saved under ignored `artifacts/journey/final-mobile.png`.
+
+The current checks are 46 passing unit/query tests, a successful production build, and the successful full production journey. Real beginner playtesting and broader assistive-technology/browser testing remain separate product validation work.
