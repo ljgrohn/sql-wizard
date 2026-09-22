@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first trial opens with a spellbook explanation and example, then guided and independent practice. “Review this spell” reopens its teaching page. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first trial opens with a spellbook explanation and example, then guided and independent practice. “Review this spell” reopens its teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 

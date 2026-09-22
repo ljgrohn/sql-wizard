@@ -2,6 +2,7 @@ const exercises = {
   guided: {
     instruction: 'Try together: return the name of every ingredient. Type name in the gap after SELECT.',
     starter: 'SELECT \nFROM ingredients;',
+    slots: [{ after: 'SELECT ', label: 'Column name' }],
     solution: 'SELECT name FROM ingredients;',
     hints: ['The name column contains each ingredient’s label.', 'Put name after SELECT, before FROM.', 'SELECT name\nFROM ingredients;'],
     success: 'Every ingredient appears once: Crystal, Moonstone, Mushroom, and Emberroot. SELECT chose the name column; no rows were excluded. Reading the catalog helps you label the archive.',

@@ -37,3 +37,12 @@ The first trial now offers instruction before typing, a potency example, guided 
 - Browser checks against Vite: automatic teaching page, review, explicit skip, starter caret position, empty-slot feedback, Ctrl+Enter, guided success, independent solution assistance surviving reload, wrong column-order rejection, fresh mastery, mastery persistence, and continuation to trial two.
 - Checked the unassisted skip path, desktop teaching page, and 390px mobile layout. No horizontal page overflow or browser errors were observed. Verified mobile casting with a pointer click after explicitly scrolling the Cast button into view.
 - Full editor highlighting/indentation and distinct room artwork remain planned; the first trial adds result-derived catalog labels to the existing archive artwork.
+
+## Shared SQL editor — 2026-09-21
+
+CodeMirror now supplies SQLite parsing, EGA syntax colors, line numbers, wrapping, undo/redo, and indentation. Executable starters no longer contain scaffold markers; exact legacy starters are upgraded while other drafts retain their text. Guided ranges are saved with drafts.
+
+- 20 automated tests pass; the static production build passes.
+- Browser checks: first guided query cast through SQLite; Tab at the caret, selected-line indentation/outdent, undo, Enter preserving indentation, persisted whitespace, missing-slot prevention in the recipe trial, and two-slot navigation.
+- Both Ctrl+Enter and platform Command+Enter are bound. Escape then Tab moves focus to the next control without altering SQL.
+- Verified keyword/string/number/comment colors, resize and full-frame focus indication at a 390px viewport; page width remains 390px. No completion popups are installed.

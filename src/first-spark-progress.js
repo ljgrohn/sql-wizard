@@ -11,7 +11,7 @@ export function migrateProgress(saved = {}) {
     learned: previous.learned === true,
   } : { stage: 'learn', assisted: false, learned: false, migrated: Boolean(progress['first-spark'] || drafts['first-spark']) };
   if (saved.version !== 2) delete progress['first-spark'];
-  return { version: 2, index: saved.index, progress, drafts, firstSpark };
+  return { version: 2, index: saved.index, progress, drafts, firstSpark, editorSlots: record(saved.editorSlots) };
 }
 
 export function completeFirstSpark(state) {

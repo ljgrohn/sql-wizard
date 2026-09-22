@@ -1,5 +1,6 @@
 import '@fontsource/vt323/latin-400.css';
 import './style.css';
+import { createSqlEditor, initialSlots } from './sql-editor.js';
 import { lessons, fixture, tableInfo } from './lessons.js';
 import { migrateProgress, completeFirstSpark } from './first-spark-progress.js';
 
@@ -13,6 +14,8 @@ saved = migrateProgress(saved);
 let firstSpark = saved.firstSpark;
 const progress = validRecords(saved.progress);
 const drafts = validRecords(saved.drafts);
+const editorSlots = validRecords(saved.editorSlots);
+let editor;
 let index = Number.isInteger(saved.index) && saved.index >= 0 && saved.index < lessons.length ? saved.index : 0;
 let selectedTable = 'ingredients';
 let hintLevel = 0;
@@ -30,7 +33,7 @@ const draftKey = () => isFirst() ? `first-spark:${exercise()}` : lesson().id;
 const firstStatus = () => firstSpark.stage === 'done' ? 'SELECT / FROM mastered' : progress['first-spark'] === 'guided' ? 'Guided completion · fresh challenge available' : firstSpark.learned ? 'SELECT / FROM reviewed · practice in progress' : 'Learn SELECT / FROM';
 
 function save() {
-  try { localStorage.setItem(storageKey, JSON.stringify({ version: 2, index, progress, drafts, firstSpark })); }
+  try { localStorage.setItem(storageKey, JSON.stringify({ version: 2, index, progress, drafts, firstSpark, editorSlots })); }
   catch { storageAvailable = false; }
   const notice = $('#save-state');
   if (notice) notice.textContent = storageAvailable ? 'Progress saved on this device' : 'Progress lasts for this session only';
@@ -41,6 +44,7 @@ function tableMarkup(columns, rows, caption) {
 }
 
 function render() {
+  editor?.destroy();
   if (!lessons.length) {
     $('#app').innerHTML = '<main class="game-shell"><h1>SQL Wizard</h1><p>The archive is being prepared. Your trials will appear here.</p></main>';
     return;
@@ -78,10 +82,11 @@ function render() {
         <div class="workbench-grid">
           <section class="editor-panel frame" aria-labelledby="editor-title">
             <div class="panel-heading"><h2 id="editor-title"><span class="cyan" aria-hidden="true">&gt;_</span> Your incantation</h2><span class="small-label">SQL QUERY</span></div>
-            ${isFirst() && exercise() === 'guided' ? '<p id="slot-guide" class="scaffold-note">Insert the column name after SELECT. The table name is already in place.</p>' : ''}
-            <label class="sr-only" for="query">SQL query</label><div class="code-wrap"><span class="code-prompt" aria-hidden="true">&gt;</span><textarea id="query" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="keyboard-tip" placeholder="${isFirst() ? 'Write your query here' : 'SELECT name FROM ingredients;'}">${escape(typeof drafts[draftKey()] === 'string' ? drafts[draftKey()] : current.starter)}</textarea></div>
+            <p id="slot-guide" class="scaffold-note">${current.slots?.length ? current.slots.map(slot => escape(slot.label)).join(' · ') + ': type at the insertion point.' : 'Write your query below.'}</p>
+            <div id="query" class="code-wrap"></div>
+            ${current.slots?.length > 1 ? '<button id="next-slot" class="text-button">Next guided slot</button>' : ''}
             <div class="editor-actions"><div class="secondary-actions"><button id="hint" class="text-button">Need a hint?</button><button id="reset" class="text-button">Reset query</button></div><button id="cast" class="cast-button"><span aria-hidden="true">✦</span> CAST SPELL</button></div>
-            <span id="keyboard-tip" class="keyboard-tip">Ctrl / ⌘ + Enter to cast</span>
+            <span id="keyboard-tip" class="keyboard-tip">Tab: two spaces / indent selection · Shift+Tab: outdent · Escape then Tab: leave editor · Ctrl / ⌘ + Enter: cast</span>
             <div id="hint-content" class="hint-content" hidden></div>
           </section>
           <section class="result-panel frame" aria-labelledby="result-title">
@@ -95,6 +100,14 @@ function render() {
       <footer><span>NO TIMERS. JUST A LITTLE MAGIC.</span><span id="save-state">Progress saved on this device</span></footer>
     </div>
     <dialog id="spellbook" class="spellbook"><div class="panel-heading"><h2>Your spellbook</h2><button id="close-book" class="quiet-button" aria-label="Close spellbook">Close ×</button></div><p class="book-intro">Restore the ward, one query at a time.</p><div class="book-lessons">${lessons.map((l, i) => `<button data-book-lesson="${i}"><span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.id === 'first-spark' ? firstStatus() : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small></button>`).join('')}</div><h3>Beyond the first trial</h3><p class="roadmap-copy">These chapters are planned next.</p><ul class="roadmap"><li><span>Herbarium</span> Patterns, sorting & missing values</li><li><span>Potion workshop</span> Calculations, grouping & HAVING</li><li><span>Creature sanctuary</span> Traits, pairings & missing relationships</li><li><span>Alchemy observatory</span> Subqueries & multi-step CTE rituals</li></ul><p class="book-footnote">Your progress stays in this browser. This first playable build contains five trials.</p></dialog>`;
+  let doc = typeof drafts[draftKey()] === 'string' ? drafts[draftKey()] : current.starter;
+  if (doc === current.legacyStarter) doc = current.starter;
+  const slots = initialSlots(current, doc, editorSlots[draftKey()]);
+  editor = createSqlEditor({ parent: $('#query'), doc, slots,
+    onChange: (value, ranges) => { drafts[draftKey()] = value; editorSlots[draftKey()] = ranges; save(); },
+    onCast: cast,
+  });
+  $('#next-slot')?.addEventListener('click', () => editor.nextSlot());
   renderSource();
   bind();
   if (isFirst()) {
@@ -131,7 +144,7 @@ function cancelCast() {
 }
 
 function goToLesson(nextIndex) {
-  drafts[draftKey()] = $('#query').value;
+  drafts[draftKey()] = editor.value;
   cancelCast();
   index = nextIndex;
   save();
@@ -146,9 +159,10 @@ function setFeedback(message, type) {
 function cast() {
   if (running) return;
   if (isFirst() && firstSpark.stage === 'learn') { openTutorial(); return; }
-  const sql = $('#query').value;
-  if (isFirst() && exercise() === 'guided' && /^\s*SELECT\s+FROM\b/i.test(sql)) {
-    setFeedback('Fill in the column name after SELECT before casting. Try name.', 'mismatch');
+  const sql = editor.value;
+  const missing = editor.missingSlot();
+  if (missing) {
+    setFeedback(`Fill in the guided slot: ${missing.label}, then cast again.`, 'mismatch');
     focusQuery();
     return;
   }
@@ -214,7 +228,7 @@ function cast() {
 }
 
 function explainError(message) {
-  if (message.includes('no such column')) return `${message}. Check the column names in the source table. If you see ___, replace it with your answer.`;
+  if (message.includes('no such column')) return `${message}. Check the column names in the source table.`;
   if (message.includes('syntax error')) return `${message}. Check the query structure and punctuation. The field notes can help.`;
   if (message.includes('no such table')) return `${message}. Use a table name shown in the archive.`;
   return message;
@@ -224,8 +238,6 @@ function bind() {
   $('.brand').addEventListener('click', event => { event.preventDefault(); goToLesson(0); });
   document.querySelectorAll('[data-lesson]').forEach(button => button.addEventListener('click', () => goToLesson(Number(button.dataset.lesson))));
   document.querySelectorAll('[data-table]').forEach(button => button.addEventListener('click', () => { selectedTable = button.dataset.table; renderSource(); }));
-  $('#query').addEventListener('input', () => { drafts[draftKey()] = $('#query').value; save(); });
-  $('#query').addEventListener('keydown', event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); cast(); } });
   $('#cast').addEventListener('click', cast);
   $('#hint').addEventListener('click', () => {
     hintLevel = Math.min(hintLevel + 1, lesson().hints.length);
@@ -235,7 +247,7 @@ function bind() {
     $('#hint').textContent = hintLevel < lesson().hints.length ? 'Another hint?' : 'All hints shown';
     $('#hint').disabled = hintLevel === lesson().hints.length;
   });
-  $('#reset').addEventListener('click', () => { cancelCast(); drafts[draftKey()] = lesson().starter; render(); focusQuery(); });
+  $('#reset').addEventListener('click', () => { cancelCast(); drafts[draftKey()] = lesson().starter; delete editorSlots[draftKey()]; render(); focusQuery(); });
   $('#next').addEventListener('click', () => {
     if (!solved) return;
     if (isFirst() && firstSpark.stage !== 'done') {
@@ -251,9 +263,7 @@ function bind() {
 }
 
 function focusQuery() {
-  const query = $('#query');
-  query.focus();
-  if (isFirst() && exercise() === 'guided' && query.value === lesson().starter) query.setSelectionRange(7, 7);
+  editor.focus();
 }
 
 function tutorialMarkup() {

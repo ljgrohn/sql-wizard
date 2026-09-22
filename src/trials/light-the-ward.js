@@ -7,7 +7,7 @@ export default {
   "story": "Well read, apprentice. The ward needs ingredients that glow. Summon only those, and leave the ordinary ingredients on their shelves.",
   "instruction": "Return name for ingredients where glowing is 1. A value of 0 means the ingredient does not glow.",
   "teaching": "WHERE keeps only rows that match a condition. SELECT still controls which columns appear in the result.",
-  "starter": "SELECT name\nFROM ingredients\nWHERE ___;",
+  "starter": "SELECT name\nFROM ingredients\nWHERE ;",
   "solution": "SELECT name FROM ingredients WHERE glowing = 1;",
   "tables": [
     "ingredients"
@@ -18,5 +18,12 @@ export default {
     "SELECT name\nFROM ingredients\nWHERE glowing = 1;"
   ],
   "success": "Crystal and moonstone rise. A little light returns to the ward.",
-  "reward": "Lightkeeper"
+  "reward": "Lightkeeper",
+  "legacyStarter": "SELECT name\nFROM ingredients\nWHERE ___;",
+  "slots": [
+    {
+      "after": "WHERE ",
+      "label": "Condition: compare glowing with 1"
+    }
+  ]
 };
