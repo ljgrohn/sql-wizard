@@ -69,3 +69,10 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Teaching introduces AND before practice, using a different gentle/glowing example (Moonstone). Guided practice finds strong/glowing names, independent practice finds strong/non-glowing names, and the fresh mastery task returns strong/glowing IDs and names.
 - 32 tests pass and the static production build passes. Coverage includes equivalent integer thresholds, rejecting OR or single-condition answers, requiring AND practice, changed fixtures, visual-filter agreement, old AND progress migration, and assisted completion persistence. Existing comparison mastery and unrelated drafts survive migration.
 - Browser verified the two-to-one scene transition, correct row explanation, assistance surviving reload, guided completion followed by fresh mastery, persisted mastery, review access, and failed-query preservation of the earned scene. Mobile screenshot inspected at 390px with no page overflow; no browser errors.
+
+## Illustrated story journey — 2026-09-21
+
+- Added a two-page academy prologue, entry and completion scenes for every playable lesson, a reached-scenes Story journal, and persistent pending story pages/transitions. Story skipping and replay are independent of query mastery and drafts.
+- Added built-in image-generated academy arrival, potion workshop, and storeroom art; retained archive/herbarium art for those chapters. Generation prompts are in `docs/story-art-prompts.md`.
+- 35 tests pass, including complete story/art coverage, pending transition restoration, invalid saved-story handling, and learning-progress preservation.
+- Browser verified opening before teaching, reload on prologue page two, SELECT success leading to its completion scene, reload during that transition, arrival at WHERE and then its teaching page, story skipping, and journal replay/Escape preserving an edited WHERE draft and earned SELECT completion. Opening screenshot inspected; no browser errors.

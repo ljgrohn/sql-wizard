@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first four trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first four trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 
@@ -55,7 +55,9 @@ This produces a preview deployment. Promote the reviewed preview or use `npx ver
 - `src/query-engine.js`: read-only query execution and answer checking.
 - `src/sql-worker.js`: isolated SQLite runner.
 - `src/main.js`, `src/style.css`: accessible game interface and local progress.
-- `public/art/archive.png` and `public/art/herbarium.png`: EGA scene backgrounds; UI and result labels are rendered separately.
+- `src/stories.js`, `src/story-player.js`: illustrated prologue, chapter transitions, and story replay.
+- `src/scenes.js`, `public/art/`: academy, archive, herbarium, workshop, and storeroom art; text and result labels remain HTML.
+- `docs/story-art-prompts.md`: new story artwork prompts and provenance.
 - `docs/sql-wizard-curriculum.md`: full curriculum.
 - `docs/sql-wizard-story-and-build.md`: narrative, magical uses of SQL, delivery plan.
 - `docs/next-steps.md`: first-playtest feedback, teaching/editor improvements, scene variation, and the planned per-trial commit sequence.

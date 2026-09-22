@@ -3,6 +3,8 @@ import './style.css';
 import { createSqlEditor, initialSlots } from './sql-editor.js';
 import { lessons, fixture, tableInfo } from './lessons.js';
 import { matchesFilter, describeFilter, filterExplanation } from './row-filters.js';
+import { stories, storyEpisode, restoreStory } from './stories.js';
+import { createStoryPlayer } from './story-player.js';
 import { sceneForLesson } from './scenes.js';
 import { keywords } from './query-engine.js';
 import { migrateLearning, completeLesson, progressVersion } from './learning-progress.js';
@@ -15,6 +17,8 @@ if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
 const validRecords = input => input && typeof input === 'object' && !Array.isArray(input) ? input : {};
 saved = migrateLearning(saved);
 const learning = saved.learning;
+const story = restoreStory(saved.story);
+let storyPlayer;
 const progress = validRecords(saved.progress);
 const drafts = validRecords(saved.drafts);
 const editorSlots = validRecords(saved.editorSlots);
@@ -40,7 +44,7 @@ const learningStatus = (current = lessons[index]) => {
 };
 
 function save() {
-  try { localStorage.setItem(storageKey, JSON.stringify({ version: progressVersion, index, lessonId: lesson().id, progress, drafts, learning, editorSlots })); }
+  try { localStorage.setItem(storageKey, JSON.stringify({ version: progressVersion, index, lessonId: lesson().id, progress, drafts, learning, editorSlots, story })); }
   catch { storageAvailable = false; }
   const notice = $('#save-state');
   if (notice) notice.textContent = storageAvailable ? 'Progress saved on this device' : 'Progress lasts for this session only';
@@ -65,7 +69,7 @@ function render() {
     <div class="game-shell">
       <header class="masthead">
         <a class="brand" href="#" aria-label="SQL Wizard home"><span class="brand-star" aria-hidden="true">✦</span> SQL WIZARD<span class="edition">THE FIRST SPARK</span></a>
-        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
+        <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
       </header>
       <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : `0${i + 1}`}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
       <main>
@@ -99,7 +103,7 @@ function render() {
           <section class="result-panel frame" aria-labelledby="result-title">
             <div class="panel-heading"><h2 id="result-title">Spell result</h2><span id="row-count" class="small-label">AWAITING QUERY</span></div>
             <div id="feedback" class="feedback" role="status" aria-live="polite"><span class="waiting-rune" aria-hidden="true">◇</span><p>The circle is quiet.<br><span>Write a query and cast your first spell.</span></p></div>
-            <div id="result-table"></div><button id="next" class="next-button" hidden>${index === lessons.length - 1 ? 'View your spellbook' : 'Continue your training →'}</button>
+            <div id="result-table"></div><button id="next" class="next-button" hidden>${index === lessons.length - 1 ? 'Finish the chapter →' : 'Continue the story →'}</button>
           </section>
         </div>
         <details class="field-note"><summary><span>✧ FIELD NOTES</span> ${escape(current.topic)} <span class="note-open">Read the lesson +</span></summary><p>${escape(current.teaching)}</p>${current.tables.length > 1 ? '<p class="relationship">recipes.id → recipe_items.recipe_id<br>recipe_items.ingredient_id → ingredients.id<br>ingredients.id → stock.ingredient_id</p>' : ''}</details>
@@ -125,15 +129,17 @@ function render() {
     $('#spell-lesson').addEventListener('cancel', event => {
       if (learningState().stage === 'learn') event.preventDefault();
     });
-    if (learningState().stage === 'learn') openTutorial();
+
     if (learningState().stage === 'done' || learningState().guidedDone && exercise() === 'guided' || learningState().independentDone && exercise() === 'independent') {
       solved = true;
       $('#next').hidden = false;
     }
-    $('#next').textContent = learningState().stage === 'done' ? 'Continue your training →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
+    $('#next').textContent = learningState().stage === 'done' ? 'Continue the story →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
   }
   if (hasTeaching()) renderLearnedScene();
+  storyPlayer = createStoryPlayer($('#app'), { onPage: page => { story.pending.page = page; save(); }, onFinish: finishStory });
   save();
+  offerStory();
 }
 
 function renderSource() {
@@ -238,7 +244,7 @@ function cast() {
           learning[lesson().id] = completeLesson(learningState());
           if (learningState().stage === 'done') progress[lesson().id] = 'complete';
           else if (learningState().stage === 'independent') progress[lesson().id] = 'guided';
-          $('#next').textContent = learningState().stage === 'done' ? 'Continue your training →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
+          $('#next').textContent = learningState().stage === 'done' ? 'Continue the story →' : exercise() === 'guided' ? 'Try it yourself →' : 'Try a fresh challenge →';
           $('.learning-status').textContent = learningStatus();
           if (learningState().stage === 'done') $('.learning-strip > span').textContent = `✓ ${lesson().topic} mastered`;
         } else {
@@ -287,10 +293,10 @@ function bind() {
       learningState().stage = exercise() === 'guided' ? 'independent' : 'mastery';
       save(); render(); focusQuery(); return;
     }
-    if (index < lessons.length - 1) goToLesson(index + 1);
-    else openBook();
+    beginStory(`after:${lesson().id}`, 'transition', lessons[index + 1]?.id || null);
   });
   $('#journey').addEventListener('click', openBook);
+  $('#story-journal').addEventListener('click', openStoryJournal);
   $('#close-book').addEventListener('click', () => $('#spellbook').close());
   document.querySelectorAll('[data-book-lesson]').forEach(button => button.addEventListener('click', () => goToLesson(Number(button.dataset.bookLesson))));
 }
@@ -337,6 +343,56 @@ function openBook() {
     button.innerHTML = `<span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.tutorial ? learningStatus(l) : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small>`;
   });
   $('#spellbook').showModal();
+}
+
+
+function offerStory() {
+  if (story.pending) { showPendingStory(); return; }
+  if (!story.seen.prologue) { beginStory('prologue', 'entry'); return; }
+  if (!story.seen[lesson().id]) { beginStory(lesson().id, 'entry'); return; }
+  if (hasTeaching() && learningState().stage === 'learn') openTutorial();
+}
+
+function beginStory(id, mode, target = null) {
+  if (!storyEpisode(id)) return;
+  cancelCast();
+  $('#cast').disabled = false;
+  $('#cast').innerHTML = '<span aria-hidden="true">✦</span> CAST SPELL';
+  document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+  story.pending = { id, mode, target, page: 0 };
+  save(); showPendingStory();
+}
+
+function showPendingStory() {
+  const pending = story.pending;
+  const label = pending.mode === 'replay' ? 'Return to your lesson' : pending.mode === 'transition' ? (pending.target ? 'Follow the story →' : 'View your spellbook') : pending.id === 'prologue' ? 'Enter the academy →' : hasTeaching() ? 'Learn this spell →' : 'Begin the trial →';
+  storyPlayer.open(storyEpisode(pending.id), pending.page, label);
+}
+
+function finishStory() {
+  const pending = story.pending;
+  story.seen[pending.id] = true;
+  story.pending = null;
+  save();
+  if (pending.mode === 'transition') {
+    const nextIndex = lessons.findIndex(item => item.id === pending.target);
+    if (nextIndex >= 0) goToLesson(nextIndex);
+    else openBook();
+  } else if (pending.mode === 'entry') offerStory();
+  else $('#story-journal').focus();
+}
+
+function openStoryJournal() {
+  let journal = $('#story-journal-dialog');
+  if (!journal) {
+    journal = document.createElement('dialog'); journal.id = 'story-journal-dialog'; journal.className = 'spellbook';
+    journal.setAttribute('aria-labelledby', 'journal-title'); $('#app').append(journal);
+  }
+  const ids = ['prologue', ...lessons.flatMap(item => [item.id, `after:${item.id}`])].filter(id => id === 'prologue' || story.seen[id]);
+  journal.innerHTML = `<div class="panel-heading"><h2 id="journal-title">Your story so far</h2><button id="close-story-journal" class="quiet-button">Close ×</button></div><p class="book-intro">Revisit the scenes you have reached. Replaying a story does not change your lesson progress.</p><div class="book-lessons">${ids.map(id => `<button data-story="${id}">${escape(storyEpisode(id).title)}</button>`).join('')}</div>`;
+  journal.querySelector('#close-story-journal').onclick = () => journal.close();
+  journal.querySelectorAll('[data-story]').forEach(button => { button.onclick = () => beginStory(button.dataset.story, 'replay'); });
+  journal.showModal();
 }
 
 render();
