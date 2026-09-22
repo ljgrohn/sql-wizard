@@ -37,12 +37,17 @@ try {
   assert.doesNotMatch(browser('get', 'text', '.inventory-grid'), /With a worked example/);
   click('[data-practice-stage="empty-shelves"]');
   query(practiceByLesson['empty-shelves'][0].solution); browser('wait', '#craft-feedback.success');
+  browser('reload'); browser('wait', '#workshop'); workshop();
+  assert.equal(browser('get', 'text', '#craft-title'), practiceByLesson['empty-shelves'][0].title);
   browser('set', 'viewport', '390', '844');
   assert.equal(evaluate('document.documentElement.scrollWidth <= innerWidth'), true);
   assert.equal(evaluate('[...document.images].every(img=>img.complete && img.naturalWidth>0)'), true);
   browser('screenshot', 'artifacts/practice/workshop-mobile.png', '--full');
   browser('set', 'viewport', '1440', '1000');
   browser('screenshot', 'artifacts/practice/workshop-desktop.png', '--full');
+  click('#leave-workshop'); browser('wait', '#query');
+  click('#stage-practice'); browser('wait', '#craft-query');
+  assert.equal(browser('get', 'text', '#craft-title'), first.title);
   click('#leave-workshop'); browser('wait', '#query');
   const before = JSON.parse(progressBefore), after = JSON.parse(evaluate('localStorage.getItem("sql-wizard-progress-v5")'));
   assert.deepEqual(after.progress, before.progress); assert.deepEqual(after.learning, before.learning);

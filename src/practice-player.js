@@ -7,12 +7,12 @@ const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', 
 const record = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 const table = (columns, rows) => `<div class="table-scroll"><table><thead><tr>${columns.map(c => `<th scope="col">${escape(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${row.map(cell => `<td>${cell === null ? '<span class="null">NULL</span>' : escape(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 
-export function openPractice(root, lessonId, onExit) {
+export function openPractice(root, lessonId, onExit, { resume = false } = {}) {
   let saved = {};
   try { saved = record(JSON.parse(localStorage.getItem(storageKey))); } catch { /* Session-only play works too. */ }
   const drafts = record(saved.drafts), crafted = record(saved.crafted), assisted = record(saved.assisted);
   let current = getPracticeProblem(saved.current);
-  if (!current || current.lessonId !== lessonId) current = practiceByLesson[lessonId][0];
+  if (!current || !resume && current.lessonId !== lessonId) current = practiceByLesson[lessonId][0];
   let editor, worker, timer, hint = 0, running = false, awarded = false, storageAvailable = true;
   const $ = selector => root.querySelector(selector);
   function save() {
@@ -29,7 +29,8 @@ export function openPractice(root, lessonId, onExit) {
     const group = practiceByLesson[current.lessonId];
     root.innerHTML = `<div class="game-shell workshop-shell">
       <header class="masthead"><div class="brand"><span class="brand-star">✦</span> THE WORKSHOP<span class="edition">PRACTICE MAKES MAGIC</span></div><button id="leave-workshop" class="quiet-button">Return to lessons →</button></header>
-      <nav class="lesson-nav" aria-label="Practice stages">${lessons.map((l, i) => `<button data-practice-stage="${l.id}" ${l.id === current.lessonId ? 'aria-current="step"' : ''}><span class="step-number">0${i + 1}</span><span>${escape(l.topic)} · ${practiceByLesson[l.id].filter(p => crafted[p.id]).length}/3</span></button>`).join('')}</nav>
+      <label class="chapter-jump">Practice a concept <select id="practice-select">${lessons.map(l => `<option value="${l.id}" ${l.id === current.lessonId ? 'selected' : ''}>${escape(l.title)}</option>`).join('')}</select></label>
+      <nav class="lesson-nav" aria-label="Practice stages">${lessons.map((l, i) => `<button data-practice-stage="${l.id}" ${l.id === current.lessonId ? 'aria-current="step"' : ''}><span class="step-number">${String(i + 1).padStart(2, '0')}</span><span>${escape(l.topic)} · ${practiceByLesson[l.id].filter(p => crafted[p.id]).length}/3</span></button>`).join('')}</nav>
       <section class="workshop-banner frame"><img src="/art/practice-workbench.png" alt="A moonlit alchemy workbench with a glowing cauldron, spell scrolls, and colorful potion bottles."/><div><span class="speaker">IONA’S OPEN WORKSHOP</span><h1>Little spells. Lasting practice.</h1><p>The academy needs everyday magic, from reading lights to practice brews. Read the request, work out the SQL, and craft something useful. Every stage has three commissions. Revisit them whenever you like.</p></div></section>
       <div class="craft-choices" role="group" aria-label="Crafting problems">${group.map((p, i) => `<button data-problem="${p.id}" class="frame" aria-pressed="${p.id === current.id}"><span class="speaker">COMMISSION 0${i + 1} ${crafted[p.id] ? '✓' : '◇'}</span><strong>${escape(p.title)}</strong><small>${escape(p.reward.kind)} · ${crafted[p.id] ? crafted[p.id].independent ? 'Crafted independently' : 'Crafted with an example' : 'Not crafted yet'}</small></button>`).join('')}</div>
       <div class="workbench-grid"><section class="editor-panel frame"><span class="speaker">CRAFT A ${escape(current.reward.kind.toUpperCase())}</span><h2 id="craft-title" tabindex="-1">${escape(current.title)}</h2><p class="craft-story">${escape(current.story)}</p><p class="craft-request">${escape(current.instruction)}</p><div id="craft-query" class="code-wrap"></div><div class="editor-actions"><div class="secondary-actions"><button id="craft-hint" class="text-button">Need a hint?</button><button id="craft-reset" class="text-button">Start a fresh attempt</button></div><button id="craft-cast" class="cast-button">✦ CRAFT ${current.reward.kind.toUpperCase()}</button></div><p class="keyboard-tip">Ctrl / ⌘ + Enter: craft · Escape then Tab: leave editor</p><div id="craft-hints" class="hint-content" hidden></div></section>
@@ -39,6 +40,7 @@ export function openPractice(root, lessonId, onExit) {
       <footer><span>NO TIMERS. KEEP EXPERIMENTING.</span><span id="workshop-save"></span></footer></div>`;
     editor = createSqlEditor({ parent: $('#craft-query'), doc: typeof drafts[current.id] === 'string' ? drafts[current.id] : current.starter, slots: [], onChange: value => { drafts[current.id] = value; save(); }, onCast: cast });
     $('#leave-workshop').onclick = leave;
+    $('#practice-select').onchange = event => select(practiceByLesson[event.target.value][0]);
     root.querySelectorAll('[data-practice-stage]').forEach(b => { b.onclick = () => select(practiceByLesson[b.dataset.practiceStage][0]); });
     root.querySelectorAll('[data-problem]').forEach(b => { b.onclick = () => select(getPracticeProblem(b.dataset.problem)); });
     function source(name) {
