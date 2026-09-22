@@ -56,3 +56,9 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Verified v2 migration in the browser: completed SELECT and unaffected trial progress remain; old WHERE completion is offered for practice again with a migration explanation and the previous draft accessible. Explicitly skipping to independent practice and completing it without a solution earns mastery.
 - Source rows agree with results: Crystal/Moonstone for glowing = 1, Mushroom/Emberroot for glowing = 0. Included/excluded labels accompany color; failed queries preserve the last successful scene. A 390px viewport has no horizontal page overflow; wide source tables scroll internally.
 - Static production build passes. No browser errors observed. Other three trials retain their original teaching content and use the shared editor.
+
+## Potency comparisons and herbarium — 2026-09-21
+
+- Added the comparison lesson before AND, with a distinct generated EGA herbarium background. The built-in generation prompt and provenance are in `docs/herbarium-art-prompt.txt`; the asset is `public/art/herbarium.png`.
+- 28 tests and the static production build pass. Tests cover the boundary at 7, equivalent `> 6` for integer fixtures, rejection of `> 7` and unwanted glowing filters, all exercise variants, decimal counterexamples, and saved-trial identity across insertion.
+- Browser verified: lesson offered before typing, example returns only Crystal, guided `>= 7` returns Crystal and Emberroot, independent `< 7` returns Moonstone and Mushroom, mastery survives reload, and source-row explanations agree with results. Herbarium screenshot inspected; no browser errors.

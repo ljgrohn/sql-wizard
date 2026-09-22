@@ -2,13 +2,14 @@ import '@fontsource/vt323/latin-400.css';
 import './style.css';
 import { createSqlEditor, initialSlots } from './sql-editor.js';
 import { lessons, fixture, tableInfo } from './lessons.js';
+import { matchesFilter, describeFilter, filterExplanation } from './row-filters.js';
 import { keywords } from './query-engine.js';
-import { migrateLearning, completeLesson } from './learning-progress.js';
+import { migrateLearning, completeLesson, progressVersion } from './learning-progress.js';
 
-const storageKey = 'sql-wizard-progress-v3';
+const storageKey = `sql-wizard-progress-v${progressVersion}`;
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let saved = {};
-try { saved = JSON.parse(localStorage.getItem(storageKey) || localStorage.getItem('sql-wizard-progress-v2') || localStorage.getItem('sql-wizard-progress-v1')) || {}; } catch { /* A fresh game also works without storage. */ }
+try { saved = JSON.parse(localStorage.getItem(storageKey) || localStorage.getItem('sql-wizard-progress-v3') || localStorage.getItem('sql-wizard-progress-v2') || localStorage.getItem('sql-wizard-progress-v1')) || {}; } catch { /* A fresh game also works without storage. */ }
 if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
 const validRecords = input => input && typeof input === 'object' && !Array.isArray(input) ? input : {};
 saved = migrateLearning(saved);
@@ -38,7 +39,7 @@ const learningStatus = (current = lessons[index]) => {
 };
 
 function save() {
-  try { localStorage.setItem(storageKey, JSON.stringify({ version: 3, index, progress, drafts, learning, editorSlots })); }
+  try { localStorage.setItem(storageKey, JSON.stringify({ version: progressVersion, index, lessonId: lesson().id, progress, drafts, learning, editorSlots })); }
   catch { storageAvailable = false; }
   const notice = $('#save-state');
   if (notice) notice.textContent = storageAvailable ? 'Progress saved on this device' : 'Progress lasts for this session only';
@@ -68,8 +69,8 @@ function render() {
       <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : `0${i + 1}`}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
       <main>
         <div class="world-grid">
-          <section class="scene frame" aria-label="The academy archive">
-            <img class="scene-art" src="/art/archive.png" alt="An apprentice wizard and owl in a cyan and magenta pixel-art library, beside a summoning circle." />
+          <section class="scene frame" aria-label="${escape(current.place)}">
+            <img class="scene-art" src="/art/${current.scene === 'herbarium' ? 'herbarium' : 'archive'}.png" alt="${current.scene === 'herbarium' ? 'A moonlit EGA greenhouse with ingredient trays, a balance, and a potency-testing bench.' : 'An apprentice wizard and owl in a cyan and magenta pixel-art library, beside a summoning circle.'}" />
             <div class="scene-location"><span class="live-dot" aria-hidden="true"></span> ${escape(current.place)} <span> / NIGHT 01</span></div>
             <div id="summons" class="summons" aria-hidden="true"><span>✧</span><span>◇</span><span>✧</span></div>
             <div class="dialogue"><span class="speaker">✦ PROFESSOR QUILL</span><p id="dialogue-text">${escape(current.story)}</p><span class="dialogue-caret" aria-hidden="true">▼</span></div>
@@ -104,7 +105,7 @@ function render() {
       </main>
       <footer><span>NO TIMERS. JUST A LITTLE MAGIC.</span><span id="save-state">Progress saved on this device</span></footer>
     </div>
-    <dialog id="spellbook" class="spellbook"><div class="panel-heading"><h2>Your spellbook</h2><button id="close-book" class="quiet-button" aria-label="Close spellbook">Close ×</button></div><p class="book-intro">Restore the ward, one query at a time.</p><div class="book-lessons">${lessons.map((l, i) => `<button data-book-lesson="${i}"><span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.tutorial ? learningStatus(l) : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small></button>`).join('')}</div><h3>Beyond the first trial</h3><p class="roadmap-copy">These chapters are planned next.</p><ul class="roadmap"><li><span>Herbarium</span> Patterns, sorting & missing values</li><li><span>Potion workshop</span> Calculations, grouping & HAVING</li><li><span>Creature sanctuary</span> Traits, pairings & missing relationships</li><li><span>Alchemy observatory</span> Subqueries & multi-step CTE rituals</li></ul><p class="book-footnote">Your progress stays in this browser. This first playable build contains five trials.</p></dialog>`;
+    <dialog id="spellbook" class="spellbook"><div class="panel-heading"><h2>Your spellbook</h2><button id="close-book" class="quiet-button" aria-label="Close spellbook">Close ×</button></div><p class="book-intro">Restore the ward, one query at a time.</p><div class="book-lessons">${lessons.map((l, i) => `<button data-book-lesson="${i}"><span>${progress[l.id] ? '✦' : '◇'} ${escape(l.title)}</span><small>${l.tutorial ? learningStatus(l) : progress[l.id] ? progress[l.id] === 'guided' ? 'Completed with a worked example' : l.reward : l.topic}</small></button>`).join('')}</div><h3>Beyond the first trial</h3><p class="roadmap-copy">These chapters are planned next.</p><ul class="roadmap"><li><span>Herbarium</span> Patterns, sorting & missing values</li><li><span>Potion workshop</span> Calculations, grouping & HAVING</li><li><span>Creature sanctuary</span> Traits, pairings & missing relationships</li><li><span>Alchemy observatory</span> Subqueries & multi-step CTE rituals</li></ul><p class="book-footnote">Your progress stays in this browser. This build contains ${lessons.length} trials.</p></dialog>`;
   let doc = typeof drafts[draftKey()] === 'string' ? drafts[draftKey()] : current.starter;
   if (doc === current.legacyStarter) doc = current.starter;
   const slots = initialSlots(current, doc, editorSlots[draftKey()]);
@@ -140,9 +141,9 @@ function renderSource() {
   const filter = last && lessons[index].exercises[last.exercise]?.rowFilter;
   const rows = fixture()[selectedTable];
   $('#source-table').innerHTML = filter && selectedTable === 'ingredients'
-    ? `<p class="schema-note">Last successful filter: glowing = ${filter.equals}. All source records remain here.</p>` + tableMarkup([...info.columns, 'WHERE result'], rows.map(row => [...row, row[filter.column] === filter.equals ? 'Included' : 'Excluded']), selectedTable)
+    ? `<p class="schema-note">Last successful filter: ${escape(describeFilter(filter, info.columns))}. All source records remain here.</p>` + tableMarkup([...info.columns, 'Filter check (annotation)'], rows.map(row => [...row, `${matchesFilter(row, filter) ? 'Included' : 'Excluded'}: ${filterExplanation(row, filter, info.columns)}`]), selectedTable)
     : tableMarkup(info.columns, rows, selectedTable);
-  if (filter && selectedTable === 'ingredients') document.querySelectorAll('#source-table tbody tr').forEach((tr, i) => { tr.className = rows[i][filter.column] === filter.equals ? 'matched-row' : 'excluded-row'; });
+  if (filter && selectedTable === 'ingredients') document.querySelectorAll('#source-table tbody tr').forEach((tr, i) => { tr.className = matchesFilter(rows[i], filter) ? 'matched-row' : 'excluded-row'; });
   $('#table-description').textContent = info.description;
   document.querySelectorAll('[data-table]').forEach(button => button.setAttribute('aria-pressed', button.dataset.table === selectedTable));
 }
@@ -300,7 +301,7 @@ function tutorialMarkup() {
     <h3>Learn the spell</h3>${tutorial.paragraphs.map(p => `<p>${escape(p)}</p>`).join('')}
     <h3>See it work</h3><p>${escape(tutorial.question || 'Quill asks: what strength is recorded for every ingredient?')}</p>
     <pre>${escape(tutorial.example)}</pre><p>${escape(tutorial.annotation)}</p>
-    ${tableMarkup(tutorial.columns, fixture().ingredients.filter(row => !tutorial.rowFilter || row[tutorial.rowFilter.column] === tutorial.rowFilter.equals).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query')}
+    ${tableMarkup(tutorial.columns, fixture().ingredients.filter(row => matchesFilter(row, tutorial.rowFilter)).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query')}
     <p>${escape(tutorial.next || 'Next, you will choose a different column together, then read the archive on your own.')}</p>
     <button id="start-practice" class="next-button">${learningState().stage === 'learn' ? 'Try together →' : 'Return to practice'}</button>
     ${learningState().stage === 'learn' ? '<button id="skip-teaching" class="text-button">Skip explanation — try independent practice</button>' : '<button id="skip-teaching" class="text-button" hidden>Skip</button>'}

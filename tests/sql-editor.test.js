@@ -5,7 +5,7 @@ import { lessons } from '../src/lessons.js';
 
 test('every guided starter has a usable insertion point without executable markers', () => {
   const guided = lessons.flatMap(lesson => lesson.exercises ? Object.values(lesson.exercises) : [lesson]).filter(lesson => lesson.slots?.length);
-  assert.equal(guided.length, 4);
+  assert.ok(guided.length >= 4);
   for (const lesson of guided) {
     assert.ok(!lesson.starter.includes('___'));
     const slots = initialSlots(lesson, lesson.starter);
