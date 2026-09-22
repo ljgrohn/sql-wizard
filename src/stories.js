@@ -1,3 +1,4 @@
+import { lessons } from './lessons.js';
 const page = (scene, title, speaker, text) => ({ scene, title, speaker, text });
 
 export const stories = {
@@ -59,6 +60,15 @@ export const stories = {
     ],
   },
 };
+
+// Authored campaign scenes travel with their lesson content.
+for (const lesson of lessons.filter(item => item.storyPages)) {
+  stories[lesson.id] = {
+    title: lesson.title,
+    pages: lesson.storyPages.map(page => ({ scene: lesson.scene, ...page })),
+    after: { scene: lesson.scene, ...lesson.ending },
+  };
+}
 
 export function storyEpisode(id) {
   if (typeof id !== 'string' || !Object.hasOwn(stories, id.replace(/^after:/, ''))) return undefined;

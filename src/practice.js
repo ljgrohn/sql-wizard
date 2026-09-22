@@ -1,3 +1,4 @@
+import { lessons } from './lessons.js';
 import { createDatabase, executeQuery, usesRequiredConcepts, sameResult } from './query-engine.js';
 
 const stockJoin = 'FROM ingredients AS i\nJOIN stock AS s ON i.id = s.ingredient_id';
@@ -144,6 +145,8 @@ export const practiceByLesson = {
       { requires: 'LEFT', tables: ['ingredients', 'stock'] }),
   ],
 };
+
+for (const lesson of lessons.filter(item => item.practice)) practiceByLesson[lesson.id] = lesson.practice;
 
 export const practiceProblems = Object.values(practiceByLesson).flat();
 export const getPracticeProblem = id => practiceProblems.find(item => item.id === id);

@@ -20,6 +20,8 @@ saved = migrateLearning(saved);
 const learning = saved.learning;
 const story = restoreStory(saved.story);
 let storyPlayer;
+let exampleWorker;
+let exampleTimer;
 const progress = validRecords(saved.progress);
 const drafts = validRecords(saved.drafts);
 const editorSlots = validRecords(saved.editorSlots);
@@ -57,6 +59,7 @@ function tableMarkup(columns, rows, caption) {
 
 function render() {
   editor?.destroy();
+  stopExamples();
   if (!lessons.length) {
     $('#app').innerHTML = '<main class="game-shell"><h1>SQL Wizard</h1><p>The archive is being prepared. Your trials will appear here.</p></main>';
     return;
@@ -72,7 +75,8 @@ function render() {
         <a class="brand" href="#" aria-label="SQL Wizard home"><span class="brand-star" aria-hidden="true">✦</span> SQL WIZARD<span class="edition">THE FIRST SPARK</span></a>
         <div class="header-actions"><span class="rank">APPRENTICE <span>${completed}/${lessons.length}</span></span><button id="workshop" class="quiet-button">Practice & craft</button><button id="story-journal" class="quiet-button">Story</button><button id="journey" class="quiet-button">Spellbook <span aria-hidden="true">☷</span></button></div>
       </header>
-      <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : `0${i + 1}`}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
+      <label class="chapter-jump">Jump to a lesson <select id="lesson-select">${lessons.map((l, i) => `<option value="${i}" ${i === index ? 'selected' : ''}>${String(i + 1).padStart(2, '0')} · ${escape(l.title)}</option>`).join('')}</select></label>
+      <nav class="lesson-nav" aria-label="Apprentice trials">${lessons.map((l, i) => `<button data-lesson="${i}" ${i === index ? 'aria-current="step"' : ''}><span class="step-number">${progress[l.id] ? '✓' : String(i + 1).padStart(2, '0')}</span><span>${escape(l.title)}</span></button>`).join('')}</nav>
       <main>
         <div class="world-grid">
           <section class="scene frame" aria-label="${escape(current.place)}">
@@ -82,7 +86,7 @@ function render() {
             <div class="dialogue"><span class="speaker">✦ ${escape(current.speaker || 'PROFESSOR QUILL')}</span><p id="dialogue-text">${escape(current.story)}</p><span class="dialogue-caret" aria-hidden="true">▼</span></div>
           </section>
           <aside class="side-panels">
-            <section class="mission frame"><div class="eyebrow">TRIAL 0${index + 1} <span>${escape(current.topic)}</span></div><h1>${escape(current.title)}</h1><p>${escape(current.instruction)}</p>${hasTeaching() ? `<p class="learning-status">${escape(learningStatus())}</p>` : ''}</section>
+            <section class="mission frame"><div class="eyebrow">TRIAL ${String(index + 1).padStart(2, '0')} <span>${escape(current.topic)}</span></div><h1>${escape(current.title)}</h1><p>${escape(current.instruction)}</p>${hasTeaching() ? `<p class="learning-status">${escape(learningStatus())}</p>` : ''}</section>
             <section class="database frame" aria-labelledby="database-title">
               <div class="panel-heading"><h2 id="database-title">The archive</h2><span class="small-label">SOURCE TABLES</span></div>
               <div class="table-tabs" role="group" aria-label="Source tables">${current.tables.map(t => `<button data-table="${t}" aria-pressed="${t === selectedTable}">${t}</button>`).join('')}</div>
@@ -259,7 +263,7 @@ function cast() {
         $('#dialogue-text').textContent = data.message;
         $('#next').hidden = false;
         const nav = document.querySelector(`[data-lesson="${index}"] .step-number`);
-        nav.textContent = progress[lesson().id] ? '✓' : `0${index + 1}`;
+        nav.textContent = progress[lesson().id] ? '✓' : String(index + 1).padStart(2, '0');
         $('.rank span').textContent = `${lessons.filter(l => progress[l.id]).length}/${lessons.length}`;
       }
     };
@@ -284,6 +288,7 @@ function enterWorkshop() {
 }
 
 function bind() {
+  $('#lesson-select').addEventListener('change', event => goToLesson(Number(event.target.value)));
   $('#workshop').addEventListener('click', enterWorkshop);
   $('#stage-practice')?.addEventListener('click', enterWorkshop);
   $('.brand').addEventListener('click', event => { event.preventDefault(); goToLesson(0); });
@@ -328,11 +333,47 @@ function tutorialMarkup() {
     ${tutorial.relationshipRows ? `<h3>How the records match</h3>${tableMarkup(tutorial.relationshipColumns, tutorial.relationshipRows(fixture()), 'Matching rows from the two source tables')}` : ''}
     <h3>See it work</h3><p>${escape(tutorial.question || 'Quill asks: what strength is recorded for every ingredient?')}</p>
     <pre>${escape(tutorial.example)}</pre><p>${escape(tutorial.annotation)}</p>
-    ${tableMarkup(tutorial.columns, tutorial.exampleRows ? tutorial.exampleRows(fixture()) : fixture().ingredients.filter(row => matchesFilter(row, tutorial.rowFilter)).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query')}
+    ${tutorial.exampleRows || tutorial.sourceIndices ? tableMarkup(tutorial.columns, tutorial.exampleRows ? tutorial.exampleRows(fixture()) : fixture().ingredients.filter(row => matchesFilter(row, tutorial.rowFilter)).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query') : '<div data-example-result="0" class="example-result" role="status">Reading the example…</div>'}
+    ${(tutorial.intermediates || []).map((step, i) => `<details class="intermediate-step"><summary>${escape(step.title)}</summary><p>${escape(step.explanation)}</p><pre>${escape(step.sql)}</pre><div data-example-result="${i + 1}" class="example-result">Reading this step…</div></details>`).join('')}
     <p>${escape(tutorial.next || 'Next, you will choose a different column together, then read the archive on your own.')}</p>
     <button id="start-practice" class="next-button">${learningState().stage === 'learn' ? 'Try together →' : 'Return to practice'}</button>
     ${learningState().stage === 'learn' ? '<button id="skip-teaching" class="text-button">Skip explanation — try independent practice</button>' : '<button id="skip-teaching" class="text-button" hidden>Skip</button>'}
   </dialog>`;
+}
+
+function stopExamples() {
+  clearTimeout(exampleTimer);
+  exampleWorker?.terminate();
+  exampleWorker = undefined;
+}
+
+function loadExamples() {
+  stopExamples();
+  const tutorial = lessons[index].tutorial;
+  if (!document.querySelector('[data-example-result]')) return;
+  const queries = [tutorial.example, ...(tutorial.intermediates || []).map(step => step.sql)];
+  const fail = () => {
+    stopExamples();
+    document.querySelectorAll('[data-example-result]').forEach(node => {
+      node.textContent = 'The example could not load. Reopen this lesson to try again.';
+    });
+  };
+  try {
+    const previewWorker = new Worker(new URL('./sql-worker.js', import.meta.url), { type: 'module' });
+    exampleWorker = previewWorker;
+    previewWorker.onmessage = ({ data }) => {
+      if (exampleWorker !== previewWorker) return;
+      if (data.error) { fail(); return; }
+      stopExamples();
+      data.previews.forEach((result, i) => {
+        const node = document.querySelector(`[data-example-result="${i}"]`);
+        if (node) node.innerHTML = tableMarkup(result.columns, result.values, 'Worked example result');
+      });
+    };
+    previewWorker.onerror = event => { event.preventDefault(); fail(); };
+    exampleTimer = setTimeout(fail, 8000);
+    previewWorker.postMessage({ id: 'examples', previewQueries: queries });
+  } catch { fail(); }
 }
 
 function openTutorial() {
@@ -340,10 +381,12 @@ function openTutorial() {
   $('#cast').disabled = false;
   $('#cast').innerHTML = '<span aria-hidden="true">✦</span> CAST SPELL';
   $('#spell-lesson').showModal();
+  loadExamples();
   $('#teaching-title').focus();
 }
 
 function closeTutorial(skip) {
+  stopExamples();
   $('#spell-lesson').close();
   learningState().learned = true;
   if (learningState().stage === 'learn') learningState().stage = skip ? 'independent' : 'guided';
