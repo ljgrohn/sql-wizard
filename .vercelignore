@@ -1,0 +1,5 @@
+output/
+artifacts/
+tests/
+docs/
+.DS_Store
