@@ -76,3 +76,11 @@ The teaching flow now supports both SELECT and WHERE trials. WHERE introduces eq
 - Added built-in image-generated academy arrival, potion workshop, and storeroom art; retained archive/herbarium art for those chapters. Generation prompts are in `docs/story-art-prompts.md`.
 - 35 tests pass, including complete story/art coverage, pending transition restoration, invalid saved-story handling, and learning-progress preservation.
 - Browser verified opening before teaching, reload on prologue page two, SELECT success leading to its completion scene, reload during that transition, arrival at WHERE and then its teaching page, story skipping, and journal replay/Escape preserving an edited WHERE draft and earned SELECT completion. Opening screenshot inspected; no browser errors.
+
+## Ingredient ledger and complete story routing — 2026-09-21
+
+- Added a two-table JOIN lesson before the three-table recipe. Teaches shared IDs, matching pairs, ON, AS aliases, qualified column names, zero versus missing stock, and filtering joined rows. Includes a matching-record walkthrough, guided task, independent positive-stock task, and fresh three-column mastery task.
+- 39 tests pass; production build passes. New tests exercise changed IDs, duplicate names, wrong keys, cross joins, incorrect LEFT JOIN output, hard-coded output, example/SQLite agreement, and v4-to-v5 migration without losing recipe position, drafts, or pending story destinations.
+- Browser verified AND → Iona invitation → ingredient-ledger story → teaching → guided JOIN. Correct results include Moonstone’s zero and omit Emberroot’s missing stock record. Worked solution assistance survives reload, is labeled guided, and a fresh query earns mastery.
+- Verified ledger completion → recipe entry → recipe success → storeroom entry → LEFT JOIN success → ending → spellbook. Completed older trials retain their continuation after reload. Story replay, skipping, and Escape preserve lesson progress and drafts.
+- Inspected opening artwork and mobile workshop story at 390px with no page overflow. Story controls remain available while scrolling. No browser errors observed. Browser automation on narrow pages needed explicit scrolling before off-screen controls; pointer and keyboard flows were checked after bringing controls into view.

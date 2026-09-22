@@ -1,7 +1,7 @@
 import { migrateProgress, completeFirstSpark } from './first-spark-progress.js';
 
 import { lessons } from './lessons.js';
-export const progressVersion = 4;
+export const progressVersion = 5;
 
 const record = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
 function migratePrevious(saved = {}) {
@@ -34,7 +34,8 @@ export function migrateLearning(saved = {}) {
   // Older saves addressed the five-trial prototype by position. Preserve the
   // current trial's identity when inserting new trials before it.
   const oldOrder = ['first-spark', 'light-the-ward', 'steady-flame', 'moonlight-tonic', 'empty-shelves'];
-  const currentId = saved.lessonId || (saved.version < 4 || !saved.version ? oldOrder[saved.index] : lessons[saved.index]?.id);
+  const previousOrder = ['first-spark', 'light-the-ward', 'potent-ingredients', 'steady-flame', 'moonlight-tonic', 'empty-shelves'];
+  const currentId = saved.lessonId || (saved.version < 4 || !saved.version ? oldOrder[saved.index] : saved.version === 4 ? previousOrder[saved.index] : lessons[saved.index]?.id);
   const index = Math.max(0, lessons.findIndex(lesson => lesson.id === currentId));
   return { ...migrated, version: progressVersion, index, lessonId: lessons[index].id, progress, learning };
 }

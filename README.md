@@ -1,6 +1,6 @@
 # SQL Wizard
 
-A small browser game that teaches real SQL through an apprentice wizard’s training. The current build contains six challenges: SELECT, WHERE, potency comparisons, AND, a potion-recipe JOIN, and a LEFT JOIN stock check.
+A small browser game that teaches real SQL through an apprentice wizard’s training. The current build contains seven challenges: SELECT, WHERE, potency comparisons, AND, a two-table stock JOIN, a potion-recipe JOIN, and a LEFT JOIN stock check.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first four trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. An illustrated prologue introduces the academy, and short story scenes connect each lesson. Use **Story** to replay scenes you have reached; skipping or replaying a scene does not award SQL progress. Story pages and unfinished transitions survive reloads. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first five trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 
@@ -39,9 +39,9 @@ This produces a preview deployment. Promote the reviewed preview or use `npx ver
 ## Scope and limitations
 
 - Progress and drafts stay in this browser, not across devices.
-- Six playable trials, not the full curriculum. Grouping, CTE lessons, animal breeding, and alchemy are mapped in the plan but not yet authored as playable chapters.
-- The guided join challenges preview later curriculum topics and reuse the archive illustration.
-- The SELECT, WHERE, potency, and AND trials distinguish guided completion from independent mastery and preserve solution assistance across reloads. The remaining two trials retain the original prototype teaching flow.
+- Seven playable trials, not the full curriculum. Grouping, CTE lessons, animal breeding, and alchemy are mapped in the plan but not yet authored as playable chapters.
+- The full recipe and LEFT JOIN challenges retain the prototype teaching flow, with illustrated workshop/storeroom stories.
+- The SELECT, WHERE, potency, AND, and two-table JOIN trials distinguish guided completion from independent mastery and preserve solution assistance across reloads. The remaining two trials retain the original prototype teaching flow.
 - Hidden fixture checks are educational validation, not secure grading.
 - One SQLite dialect; PostgreSQL/MySQL differences are not taught in this version.
 

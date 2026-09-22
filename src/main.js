@@ -12,7 +12,7 @@ import { migrateLearning, completeLesson, progressVersion } from './learning-pro
 const storageKey = `sql-wizard-progress-v${progressVersion}`;
 const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 let saved = {};
-try { saved = JSON.parse(localStorage.getItem(storageKey) || localStorage.getItem('sql-wizard-progress-v3') || localStorage.getItem('sql-wizard-progress-v2') || localStorage.getItem('sql-wizard-progress-v1')) || {}; } catch { /* A fresh game also works without storage. */ }
+try { saved = JSON.parse(localStorage.getItem(storageKey) || localStorage.getItem('sql-wizard-progress-v4') || localStorage.getItem('sql-wizard-progress-v3') || localStorage.getItem('sql-wizard-progress-v2') || localStorage.getItem('sql-wizard-progress-v1')) || {}; } catch { /* A fresh game also works without storage. */ }
 if (!saved || typeof saved !== 'object' || Array.isArray(saved)) saved = {};
 const validRecords = input => input && typeof input === 'object' && !Array.isArray(input) ? input : {};
 saved = migrateLearning(saved);
@@ -106,7 +106,7 @@ function render() {
             <div id="result-table"></div><button id="next" class="next-button" hidden>${index === lessons.length - 1 ? 'Finish the chapter →' : 'Continue the story →'}</button>
           </section>
         </div>
-        <details class="field-note"><summary><span>✧ FIELD NOTES</span> ${escape(current.topic)} <span class="note-open">Read the lesson +</span></summary><p>${escape(current.teaching)}</p>${current.tables.length > 1 ? '<p class="relationship">recipes.id → recipe_items.recipe_id<br>recipe_items.ingredient_id → ingredients.id<br>ingredients.id → stock.ingredient_id</p>' : ''}</details>
+        <details class="field-note"><summary><span>✧ FIELD NOTES</span> ${escape(current.topic)} <span class="note-open">Read the lesson +</span></summary><p>${escape(current.teaching)}</p>${current.tables.length > 1 ? `<p class="relationship">${escape(current.relationships || 'recipes.id → recipe_items.recipe_id; recipe_items.ingredient_id → ingredients.id; ingredients.id → stock.ingredient_id')}</p>` : ''}</details>
       </main>
       <footer><span>NO TIMERS. JUST A LITTLE MAGIC.</span><span id="save-state">Progress saved on this device</span></footer>
     </div>
@@ -121,6 +121,7 @@ function render() {
   $('#next-slot')?.addEventListener('click', () => editor.nextSlot());
   renderSource();
   bind();
+  if (!hasTeaching() && progress[current.id]) { solved = true; $('#next').hidden = false; }
   if (hasTeaching()) {
     $('#app').insertAdjacentHTML('beforeend', tutorialMarkup());
     $('#review-spell').addEventListener('click', openTutorial);
@@ -166,7 +167,7 @@ function renderLearnedScene() {
     return;
   }
   $('#summons').classList.add('catalog-labels', 'active');
-  $('#summons').innerHTML = last.result.values.map(row => `<span>${row.map(escape).join(' · ')}</span>`).join('');
+  $('#summons').innerHTML = (lesson().resultCaption ? `<small class="scene-filter-caption">${escape(lesson().resultCaption)}</small>` : '') + last.result.values.map(row => `<span>${row.map(escape).join(' · ')}</span>`).join('');
   $('#dialogue-text').textContent = last.message;
   renderSource();
 }
@@ -313,9 +314,10 @@ function tutorialMarkup() {
     ${learningState().migrated ? '<p class="migration-note">This lesson now includes independent practice. Your other trial progress and earlier draft are preserved; revisit this spell to earn mastery.</p>' : ''}
     ${learningState().migrated && typeof drafts[lesson().id] === 'string' ? `<details><summary>Your earlier draft</summary><pre>${escape(drafts[lesson().id])}</pre></details>` : ''}
     <h3>Learn the spell</h3>${tutorial.paragraphs.map(p => `<p>${escape(p)}</p>`).join('')}
+    ${tutorial.relationshipRows ? `<h3>How the records match</h3>${tableMarkup(tutorial.relationshipColumns, tutorial.relationshipRows(fixture()), 'Matching rows from the two source tables')}` : ''}
     <h3>See it work</h3><p>${escape(tutorial.question || 'Quill asks: what strength is recorded for every ingredient?')}</p>
     <pre>${escape(tutorial.example)}</pre><p>${escape(tutorial.annotation)}</p>
-    ${tableMarkup(tutorial.columns, fixture().ingredients.filter(row => matchesFilter(row, tutorial.rowFilter)).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query')}
+    ${tableMarkup(tutorial.columns, tutorial.exampleRows ? tutorial.exampleRows(fixture()) : fixture().ingredients.filter(row => matchesFilter(row, tutorial.rowFilter)).map(row => tutorial.sourceIndices.map(i => row[i])), 'Result of the example query')}
     <p>${escape(tutorial.next || 'Next, you will choose a different column together, then read the archive on your own.')}</p>
     <button id="start-practice" class="next-button">${learningState().stage === 'learn' ? 'Try together →' : 'Return to practice'}</button>
     ${learningState().stage === 'learn' ? '<button id="skip-teaching" class="text-button">Skip explanation — try independent practice</button>' : '<button id="skip-teaching" class="text-button" hidden>Skip</button>'}
@@ -355,10 +357,12 @@ function offerStory() {
 
 function beginStory(id, mode, target = null) {
   if (!storyEpisode(id)) return;
+  const wasRunning = running;
   cancelCast();
   $('#cast').disabled = false;
   $('#cast').innerHTML = '<span aria-hidden="true">✦</span> CAST SPELL';
   document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+  if (wasRunning) { $('#row-count').textContent = 'AWAITING QUERY'; setFeedback('Query stopped. Your draft is saved; cast again when you are ready.', 'pending'); }
   story.pending = { id, mode, target, page: 0 };
   save(); showPendingStory();
 }
