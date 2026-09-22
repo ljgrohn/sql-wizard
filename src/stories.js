@@ -5,14 +5,14 @@ export const stories = {
   prologue: {
     title: 'The Academy of the Returning Moon',
     pages: [
-      page('arrival', 'A light missing from the sky', 'YOUR FIRST NIGHT', 'The academy appears across the water, its towers tucked beneath a trembling dome of light. Beyond the gate, the ferry waits for a beacon that has almost gone out. You came to learn magic. Tonight, someone needs that magic to find the way home.'),
+      page('arrival', 'A light missing from the sky', 'YOUR FIRST NIGHT', 'The academy appears across the water, its towers tucked beneath a trembling dome of light. Beyond the gate, the ferry waits for a beacon that has almost gone out. You came to learn magic, with your little sister beside you. She lifts her amber lantern as you straighten your blue hat. Tonight, someone needs your magic to find the way home.'),
       page('arrival', 'An unusual apprenticeship', 'PROFESSOR QUILL', '“The ward is fading,” says the owl on the gatepost. “Our knowledge is still here, but scattered across catalogs and ledgers. We need someone who can ask the right questions.” He offers you a spellbook with seven empty tabs. “I kept these records. I should have noticed sooner. Help me read them properly, and we can give the beacon its light back.”'),
-      page('arrival', 'A place at the workbench', 'IONA', 'A girl in a flour-dusted apron pushes the gate open with her boot. “Iona. Potions, mostly. Quill does the speeches.” She hands you a pencil. “Keep it. A spell that works once is a lucky evening. A spell you understand is something we can count on tomorrow.”'),
+      page('arrival', 'A place at the workbench', 'IONA', 'A potion tutor in a flour-dusted apron pushes the gate open with her boot. “Iona. Potions, mostly. Quill does the speeches.” She hands you a pencil. “Keep it. A spell that works once is a lucky evening. A spell you understand is something we can count on tomorrow.”'),
     ],
   },
   'first-spark': {
     title: 'The archive wakes',
-    pages: [page('archive', 'First, learn what is here', 'PROFESSOR QUILL', 'Inside, the archive smells of old paper and rain. Quill opens the ingredient catalog. “No guessing which jar is which. Read the names first.” Your first spell will ask the catalog a question; you will use its answer to choose what happens next.'),
+    pages: [page('archive', 'First, learn what is here', 'PROFESSOR QUILL', 'Inside, the archive smells of old paper and rain. Your little sister holds her lantern over the desk while you open your spellbook. Quill opens the ingredient catalog. “No guessing which jar is which. Read the names first.” Your first spell will ask the catalog a question; you will use its answer to choose what happens next.'),
       page('archive', 'The first page of your spellbook', 'PROFESSOR QUILL', 'On the lowest shelf lies a bundle of old student spellbooks. Each begins with the same simple question: what do we have? “Mine is the blue one,” Quill admits. “The first page has three corrections. You may make as many as you need.”')],
     after: page('archive', 'Names in the dark', 'PROFESSOR QUILL', 'The catalog begins to make sense: one record for each ingredient, with its own name and ID. You fill the first tab of your spellbook. Outside, the ferry lantern swings again. Quill taps the unlit ward-lamp. “Now we know how to read. Let us find something that carries its own light.”'),
   },
@@ -55,7 +55,7 @@ export const stories = {
   practice: {
     title: 'The apprentice’s workbench',
     pages: [
-      page('workshop', 'Small spells, steady hands', 'IONA', 'Iona has left a corner of the workshop ready for you: clean bottles, blank spell slips, and a stack of work orders. “Pick something to make. Every order asks you to read the records and find what it needs. There is no rush here. This bench is for getting better.”'),
+      page('workshop', 'Small spells, steady hands', 'IONA', 'Your little sister sets her lantern on the workbench. Iona has left a corner of the workshop ready for you both: clean bottles, blank spell slips, and a stack of work orders. “Pick something to make. Every order asks you to read the records and find what it needs. There is no rush here. This bench is for getting better.”'),
       page('workshop', 'A ritual worth repeating', 'PROFESSOR QUILL', 'Quill opens your spellbook beside the cauldron. “Read the request. Ask your question. Check the answer.” He nudges a fresh spell slip toward you. “When the answer is wrong, change the question and try again. The useful magic is learning why it works.”'),
     ],
   },

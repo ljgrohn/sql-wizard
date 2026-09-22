@@ -17,7 +17,7 @@ export const expeditionRestoration = stage({
     { title: 'A report worth acting on', speaker: 'QUILL', text: 'Quill closes the example book. You have learned to preserve identities, distinguish missing records, and avoid multiplying evidence. Now build a report the council can trace and trust.' },
     { title: 'The last spell is a question', speaker: 'IONA', text: 'Before submitting, ask what each row represents, which events each total includes, and what each NULL means. The restoration begins with an answer you can explain.' },
   ],
-  ending: { title: 'The roads reopen', speaker: 'IONA', text: 'The council receives an accurate report, with recorded supplies counted once and unknown risks left visible. Teams set out with clearer questions. Your workshop stays open: mastery grows through another honest query.' },
+  ending: { title: 'The roads reopen', speaker: 'IONA', text: 'The council receives an accurate report, with recorded supplies counted once and unknown risks left visible. Teams set out with clearer questions. Beside you, your little sister lifts her lantern toward the restored beacon. You raise your wand to meet its light. Your workshop stays open: mastery grows through another honest query.' },
   paragraphs: [
     'This is the final transfer assessment. deliveries and surveys are independent one-to-many tables. Joining their raw rows would multiply deliveries by surveys. Summarize each to one row per expedition_id before joining.',
     'A delivery total can use zero to mean zero recorded units. An absent survey does not prove zero danger: keep peak_risk NULL when no survey exists. Choose missing-value handling based on what the number means.',
