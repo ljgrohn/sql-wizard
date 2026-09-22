@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first trial opens with a spellbook explanation and example, then guided and independent practice. “Review this spell” reopens its teaching page. The spellbook lists progress and future chapters.
+Open the local URL printed by Vite. The shared SQL editor highlights SQLite syntax. Tab inserts two spaces or indents a selection; Shift+Tab outdents. Enter keeps indentation, and undo/redo work normally. Press Escape then Tab to leave the editor. Guided slots are labeled outside the SQL and drafts preserve whitespace. Use the source-table tabs and field notes, write a query, then click **Cast spell** or press **Ctrl/⌘ + Enter**. The first two trials open with spellbook explanations and examples, then guided and independent practice. “Review this spell” reopens the current teaching page. The spellbook lists progress and future chapters.
 
 ## Check and build
 
@@ -41,13 +41,15 @@ This produces a preview deployment. Promote the reviewed preview or use `npx ver
 - Progress and drafts stay in this browser, not across devices.
 - Five playable trials, not the full curriculum. Grouping, CTE lessons, animal breeding, and alchemy are mapped in the plan but not yet authored as playable chapters.
 - The guided join challenges preview later curriculum topics and reuse the archive illustration.
-- The first trial distinguishes guided completion from independent mastery and preserves solution assistance across reloads. The remaining trials retain the original prototype flow.
+- The SELECT and WHERE trials distinguish guided completion from independent mastery and preserve solution assistance across reloads. The remaining three trials retain the original prototype teaching flow.
 - Hidden fixture checks are educational validation, not secure grading.
 - One SQLite dialect; PostgreSQL/MySQL differences are not taught in this version.
 
 ## Project map
 
 - `src/lessons.js`: ordered trial registry.
+- `src/sql-editor.js`: shared CodeMirror editor with SQLite syntax and guided slots.
+- `src/learning-progress.js`: versioned lesson progress and migration from earlier saves.
 - `src/trials/`: one content module per trial, recorded in its own commit.
 - `src/lesson-data.js`: schema descriptions, visible and validation fixtures.
 - `src/query-engine.js`: read-only query execution and answer checking.

@@ -46,3 +46,13 @@ CodeMirror now supplies SQLite parsing, EGA syntax colors, line numbers, wrappin
 - Browser checks: first guided query cast through SQLite; Tab at the caret, selected-line indentation/outdent, undo, Enter preserving indentation, persisted whitespace, missing-slot prevention in the recipe trial, and two-slot navigation.
 - Both Ctrl+Enter and platform Command+Enter are bound. Escape then Tab moves focus to the next control without altering SQL.
 - Verified keyword/string/number/comment colors, resize and full-frame focus indication at a 390px viewport; page width remains 390px. No completion popups are installed.
+
+## Revised WHERE lesson — 2026-09-21
+
+The teaching flow now supports both SELECT and WHERE trials. WHERE introduces equality and numeric flags before requiring a condition; its example finds ID 2, guided practice finds glowing names, independent practice finds non-glowing names, and the fresh mastery task returns glowing IDs and names.
+
+- 24 automated tests pass. New tests cover all three exercises on changed datasets, reversed equality, wrong filters, hard-coded names, column order, example output, source-row inclusion, v2 migration, and assistance surviving reload.
+- Browser checks cover guided success, incorrect independent answers, syntax errors, viewing the solution then reloading, guided completion, fresh mastery, persisted mastery/scene labels, and review access. Both Ctrl+Enter and Command+Enter were used successfully.
+- Verified v2 migration in the browser: completed SELECT and unaffected trial progress remain; old WHERE completion is offered for practice again with a migration explanation and the previous draft accessible. Explicitly skipping to independent practice and completing it without a solution earns mastery.
+- Source rows agree with results: Crystal/Moonstone for glowing = 1, Mushroom/Emberroot for glowing = 0. Included/excluded labels accompany color; failed queries preserve the last successful scene. A 390px viewport has no horizontal page overflow; wide source tables scroll internally.
+- Static production build passes. No browser errors observed. Other three trials retain their original teaching content and use the shared editor.
